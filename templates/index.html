@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>Procura — Procurement Analytics</title>
+  <meta name="description" content="Procura — AI-powered procurement analytics assistant. Analyze purchase orders, vendors, inspections, dispatches, and more with natural language." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="app" id="app">
+
+    <!-- ─── Sidebar ─── -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="logo-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <strong>Procura</strong>
+            <span class="brand-tag">AI Analytics</span>
+          </div>
+        </div>
+        <button id="sidebar-toggle" class="icon-btn sidebar-collapse-btn" type="button" aria-label="Toggle sidebar" title="Toggle sidebar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M9 3v18"/>
+          </svg>
+        </button>
+      </div>
+
+      <button id="new-chat-btn" class="new-chat-btn" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        New Chat
+      </button>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Quick Actions</div>
+        <button class="nav-item" data-action="dashboard" id="dashboard-btn" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+          Dashboard
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-card hidden" id="user-profile-card">
+          <div class="user-avatar" id="user-avatar">U</div>
+          <div class="user-info">
+            <span class="user-name" id="user-name"></span>
+            <span class="user-role" id="user-role"></span>
+          </div>
+        </div>
+        <div class="status-badge" id="status-badge">
+          <span class="status-dot" id="status-dot"></span>
+          <span class="status-text" id="status-text">Checking…</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ─── Mobile topbar ─── -->
+    <header class="mobile-topbar" id="mobile-topbar">
+      <button id="mobile-sidebar-btn" class="icon-btn" type="button" aria-label="Open menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12h18M3 6h18M3 18h18"/>
+        </svg>
+      </button>
+      <div class="mobile-brand">
+        <div class="logo-icon small" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <strong>Procura</strong>
+      </div>
+      <button id="mobile-new-chat-btn" class="icon-btn" type="button" aria-label="New chat">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- ─── Main chat area ─── -->
+    <div class="chat-area">
+      <main id="messages" class="messages" aria-live="polite">
+
+        <!-- Welcome screen -->
+        <div class="welcome-screen" id="welcome-screen">
+          <div class="welcome-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="url(#welcome-grad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <defs>
+                <linearGradient id="welcome-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#3ecf8e"/>
+                  <stop offset="100%" stop-color="#2aa9c9"/>
+                </linearGradient>
+              </defs>
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <h1 class="welcome-title">How can I help you today?</h1>
+          <p class="welcome-subtitle">I'm Procura, your procurement analytics assistant. Ask me anything about your data.</p>
+          <div class="suggestion-chips" id="suggestion-chips">
+            <button class="chip" data-prompt="Top 10 vendors by total PO value" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+              Top 10 vendors by spend
+            </button>
+            <button class="chip" data-prompt="Show me PO status distribution" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+              PO status breakdown
+            </button>
+            <button class="chip" data-prompt="Give me an overview of all materials" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+              Materials overview
+            </button>
+            <button class="chip" data-prompt="How many inspections happened this month?" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              Recent inspections
+            </button>
+            <button class="chip" data-prompt="Show dispatch status summary" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5a2 2 0 0 1-2 2h-1"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              Dispatch summary
+            </button>
+            <button class="chip" data-prompt="Show me the full data dashboard" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              Full dashboard
+            </button>
+          </div>
+        </div>
+
+      </main>
+
+      <!-- ─── Composer ─── -->
+      <div class="composer-area">
+        <form id="composer" class="composer" autocomplete="off">
+          <div class="input-wrap">
+            <textarea id="input" rows="1" placeholder="Ask about POs, vendors, inspections, dispatches, payments…" aria-label="Message Procura"></textarea>
+            <button id="send-btn" type="submit" aria-label="Send message" title="Send message">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 2L11 13"/>
+                <path d="M22 2L15 22l-4-9-9-4z"/>
+              </svg>
+            </button>
+          </div>
+          <p class="composer-hint">Procura can analyze your procurement data and generate charts. Press Enter to send.</p>
+        </form>
+      </div>
+    </div>
+
+    <!-- ─── Dashboard overlay ─── -->
+    <div id="dashboard-panel" class="dashboard-panel hidden" aria-hidden="true">
+      <div class="dashboard-container">
+        <div class="dashboard-panel-header">
+          <div class="dashboard-header-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            <strong>Data Overview</strong>
+          </div>
+          <button id="dashboard-close-btn" class="icon-btn" type="button" aria-label="Close dashboard">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        <div id="dashboard-body" class="dashboard-body"></div>
+      </div>
+    </div>
+
+    <!-- ─── Sidebar overlay for mobile ─── -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- ─── Login / Identity Screen ─── -->
+    <div class="login-overlay" id="login-overlay">
+      <div class="login-card">
+        <div class="login-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="url(#login-grad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <defs>
+              <linearGradient id="login-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#3ecf8e"/>
+                <stop offset="100%" stop-color="#2aa9c9"/>
+              </linearGradient>
+            </defs>
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <h2 class="login-title">Welcome to Procura</h2>
+        <p class="login-subtitle">Enter your User ID to get started</p>
+        <form id="login-form" class="login-form" autocomplete="off">
+          <div class="login-input-wrap">
+            <svg class="login-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input type="text" id="login-userid" placeholder="Enter your User ID" required autocomplete="off" />
+          </div>
+          <button type="submit" class="login-btn" id="login-btn">
+            <span class="login-btn-text">Continue</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+          <p class="login-error hidden" id="login-error"></p>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
+
