@@ -43,6 +43,10 @@ const modalChartContainer = document.getElementById("modal-chart-container");
 const sidebarExportBtn = document.getElementById("sidebar-export-btn");
 
 const dashboardBtn = document.getElementById("dashboard-btn");
+const dashboardModal = document.getElementById("dashboard-modal");
+const dashboardCloseBtn = document.getElementById("dashboard-close-btn");
+const dashboardExportBtn = document.getElementById("dashboard-export-btn");
+const dashboardSearchInput = document.getElementById("dashboard-search-input");
 
 // Suggestion chips
 const chipContainer = document.getElementById("suggestion-chips");
@@ -56,6 +60,8 @@ const CHART_COLORS = [
 
 // ─── State ───
 let isWelcomeVisible = true;
+let globalDashboardData = null;
+let activeDashboardTab = "Overview";
 
 // ─── Helpers ──────────────────────────────────────────────────
 
@@ -400,7 +406,7 @@ function buildChartCard(chart, isModal = false) {
   chartWrap.appendChild(header);
 
   const box = document.createElement("div");
-  box.className = `chart-canvas-box relative w-full mt-2 ${isModal ? "h-[450px] md:h-[500px]" : "h-[260px]"}`;
+  box.className = `chart-canvas-box relative w-full mt-2 ${isModal ? "h-[50vh] min-h-[300px] max-h-[550px]" : "h-[260px]"}`;
   const canvas = document.createElement("canvas");
   box.appendChild(canvas);
   chartWrap.appendChild(box);
@@ -500,12 +506,18 @@ function buildChartCard(chart, isModal = false) {
 function openChartInModal(chart) {
   if (!modalChartContainer || !chartModal) return;
   modalChartContainer.innerHTML = "";
-  const modalChartCard = buildChartCard(chart, true);
-  if (modalChartCard) {
-    modalChartContainer.appendChild(modalChartCard);
-    chartModal.classList.remove("hidden");
-    chartModal.classList.add("flex");
-  }
+  
+  // Make modal visible first so that browser calculates dimensions
+  chartModal.classList.remove("hidden");
+  chartModal.classList.add("flex");
+  
+  // Render chart after a short paint delay so Chart.js can read actual pixel dimensions
+  setTimeout(() => {
+    const modalChartCard = buildChartCard(chart, true);
+    if (modalChartCard) {
+      modalChartContainer.appendChild(modalChartCard);
+    }
+  }, 100);
 }
 
 function closeChartModal() {
@@ -635,7 +647,7 @@ function buildSectionCard(section) {
   `;
 
   const grid = document.createElement("div");
-  grid.className = "chart-grid grid grid-cols-1 sm:grid-cols-2 gap-3";
+  grid.className = "chart-grid grid grid-cols-1 gap-4";
   (section.charts || []).forEach((chart) => {
     const chartCard = buildChartCard(chart);
     if (chartCard) grid.appendChild(chartCard);
@@ -660,7 +672,7 @@ function buildCategoryBlock(category, anchorPrefix) {
   block.appendChild(heading);
 
   const grid = document.createElement("div");
-  grid.className = "category-grid grid grid-cols-1 xl:grid-cols-2 gap-5";
+  grid.className = "category-grid grid grid-cols-1 gap-5";
   category.sections.forEach((section) => grid.appendChild(buildSectionCard(section)));
   block.appendChild(grid);
   return block;
@@ -793,7 +805,7 @@ function buildBusinessKpiGrid(bs) {
 
 function buildBusinessAnalyticsRow(bs) {
   const row = document.createElement("div");
-  row.className = "dashboard-analytics-row grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6";
+  row.className = "dashboard-analytics-row grid grid-cols-1 gap-5 mb-6";
 
   if (!bs) {
     row.innerHTML = '<p class="text-sm text-slate-500 font-medium italic">No supplier analytics data available.</p>';
@@ -901,78 +913,420 @@ function buildAiInsightsBlock(ai) {
   return card;
 }
 
-function renderDashboardPanel(data, container) {
-  if (!container) return;
-  container.innerHTML = "";
-  const categories = data.categories || [];
-  
-  if (data.ai_insights) {
-    container.appendChild(buildAiInsightsBlock(data.ai_insights));
-  }
-  
-  if (data.business_summary) {
-    const heading = document.createElement("h2");
-    heading.className = "text-base font-extrabold text-slate-100 tracking-tight mb-4 flex items-center gap-2 mt-4";
-    heading.textContent = "Executive Business Insights";
-    container.appendChild(heading);
-    
-    container.appendChild(buildBusinessKpiGrid(data.business_summary));
-    container.appendChild(buildBusinessAnalyticsRow(data.business_summary));
-    
-    const divider = document.createElement("hr");
-    divider.className = "border-slate-800/80 my-8";
-    container.appendChild(divider);
-  }
+let loaderInterval = null;
 
-  if (!categories.length) {
-    container.innerHTML += '<p class="text-sm text-slate-500 font-medium italic">No data available to summarise yet.</p>';
+function startDashboardLoader() {
+  const loaderTitle = document.getElementById("dashboard-loader-title");
+  const loaderDesc = document.getElementById("dashboard-loader-desc");
+  if (!loaderTitle || !loaderDesc) return;
+  
+  const steps = [
+    { title: "Connecting to database...", desc: "Initializing secure connection to SAP HANA Cloud." },
+    { title: "Analyzing procurement data...", desc: "Scanning purchase orders, dispatches, and quality inspections." },
+    { title: "Aggregating KPIs...", desc: "Calculating cumulative contract spend and vendor delivery counts." },
+    { title: "Running quality audit...", desc: "Auditing non-conformance reports and defect frequencies." },
+    { title: "Generating AI insights...", desc: "Formulating executive observations and recommendations." },
+  ];
+  
+  let currentStep = 0;
+  loaderTitle.textContent = steps[0].title;
+  loaderDesc.textContent = steps[0].desc;
+  
+  if (loaderInterval) clearInterval(loaderInterval);
+  
+  loaderInterval = setInterval(() => {
+    currentStep = (currentStep + 1) % steps.length;
+    loaderTitle.textContent = steps[currentStep].title;
+    loaderDesc.textContent = steps[currentStep].desc;
+  }, 1200);
+}
+
+function stopDashboardLoader() {
+  if (loaderInterval) {
+    clearInterval(loaderInterval);
+    loaderInterval = null;
+  }
+}
+
+function showDashboardModalDirectly() {
+  if (globalDashboardData) {
+    displayDashboardData(globalDashboardData);
+  } else {
+    openDashboard();
+  }
+}
+
+function closeDashboardModal() {
+  if (dashboardModal) {
+    dashboardModal.classList.add("hidden");
+    dashboardModal.classList.remove("flex");
+  }
+  stopDashboardLoader();
+}
+
+function displayDashboardData(data) {
+  const modal = document.getElementById("dashboard-modal");
+  const loader = document.getElementById("dashboard-modal-loader");
+  const body = document.getElementById("dashboard-modal-body");
+  
+  if (modal) {
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+  }
+  if (loader) {
+    loader.classList.add("hidden");
+    loader.classList.remove("flex");
+  }
+  if (body) {
+    body.classList.remove("hidden");
+    body.classList.add("flex");
+  }
+  
+  // Render sidebar categories
+  const nav = document.getElementById("dashboard-categories-nav");
+  if (nav) {
+    nav.innerHTML = "";
+    
+    // Overview tab
+    const overviewBtn = document.createElement("button");
+    overviewBtn.className = getTabButtonClass(activeDashboardTab === "Overview");
+    overviewBtn.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="shrink-0">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+      <span>Overview</span>
+    `;
+    overviewBtn.type = "button";
+    overviewBtn.addEventListener("click", () => {
+      switchDashboardTab("Overview");
+    });
+    nav.appendChild(overviewBtn);
+    
+    // Category tabs
+    const categories = data.categories || [];
+    categories.forEach(cat => {
+      const btn = document.createElement("button");
+      btn.className = getTabButtonClass(activeDashboardTab === cat.name);
+      btn.type = "button";
+      const icon = CATEGORY_ICONS[cat.name] || DEFAULT_ICON;
+      btn.innerHTML = `
+        <span class="shrink-0">${iconSvg(icon, 14)}</span>
+        <span class="truncate">${escapeHtml(cat.name)}</span>
+      `;
+      btn.addEventListener("click", () => {
+        switchDashboardTab(cat.name);
+      });
+      nav.appendChild(btn);
+    });
+  }
+  
+  // Wait for browser to lay out elements so Chart.js has proper container sizes
+  setTimeout(() => {
+    renderActiveTabContent();
+  }, 100);
+}
+
+function getTabButtonClass(isActive) {
+  return isActive 
+    ? "flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold bg-brand-600 text-white shadow-md shadow-brand-500/10 cursor-pointer transition-all duration-150 shrink-0 lg:w-full text-left"
+    : "flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900/40 hover:bg-slate-850 hover:text-slate-200 border border-slate-850/50 text-slate-400 cursor-pointer transition-all duration-150 shrink-0 lg:w-full text-left";
+}
+
+function switchDashboardTab(tabName) {
+  activeDashboardTab = tabName;
+  
+  // Clear search input on tab switch
+  const searchInput = document.getElementById("dashboard-search-input");
+  if (searchInput) searchInput.value = "";
+  
+  const nav = document.getElementById("dashboard-categories-nav");
+  if (nav) {
+    const buttons = nav.querySelectorAll("button");
+    if (buttons.length > 0) {
+      buttons[0].className = getTabButtonClass(tabName === "Overview");
+      const categories = globalDashboardData.categories || [];
+      categories.forEach((cat, index) => {
+        if (buttons[index + 1]) {
+          buttons[index + 1].className = getTabButtonClass(tabName === cat.name);
+        }
+      });
+    }
+  }
+  
+  renderActiveTabContent();
+}
+
+function renderActiveTabContent() {
+  const scrollContainer = document.getElementById("dashboard-modal-content-scroll");
+  if (!scrollContainer) return;
+  scrollContainer.innerHTML = "";
+  
+  const contentDiv = document.createElement("div");
+  contentDiv.className = "space-y-6 animate-fadeIn";
+  scrollContainer.appendChild(contentDiv);
+  
+  if (activeDashboardTab === "Overview") {
+    if (globalDashboardData.ai_insights) {
+      contentDiv.appendChild(buildAiInsightsBlock(globalDashboardData.ai_insights));
+    }
+    
+    if (globalDashboardData.business_summary) {
+      const heading = document.createElement("h3");
+      heading.className = "text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-1 mt-4";
+      heading.textContent = "Executive Business Insights";
+      contentDiv.appendChild(heading);
+      
+      contentDiv.appendChild(buildBusinessKpiGrid(globalDashboardData.business_summary));
+      contentDiv.appendChild(buildBusinessAnalyticsRow(globalDashboardData.business_summary));
+    }
+  } else {
+    const categories = globalDashboardData.categories || [];
+    const cat = categories.find(c => c.name === activeDashboardTab);
+    if (cat) {
+      const heading = document.createElement("h3");
+      heading.className = "text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-4";
+      heading.textContent = `${cat.name} Operations`;
+      contentDiv.appendChild(heading);
+      
+      const grid = document.createElement("div");
+      grid.className = "grid grid-cols-1 gap-5";
+      cat.sections.forEach(section => {
+        grid.appendChild(buildSectionCard(section));
+      });
+      contentDiv.appendChild(grid);
+    }
+  }
+}
+
+function handleDashboardSearch(query) {
+  const scrollContainer = document.getElementById("dashboard-modal-content-scroll");
+  if (!scrollContainer) return;
+  
+  const q = query.trim().toLowerCase();
+  if (!q) {
+    renderActiveTabContent();
     return;
   }
   
-  const secHeading = document.createElement("h2");
-  secHeading.className = "text-base font-extrabold text-slate-100 tracking-tight mb-4 flex items-center gap-2";
-  secHeading.textContent = "Business Domain Exploration";
-  container.appendChild(secHeading);
-
-  const anchorPrefix = "dash-" + Date.now();
-  container.appendChild(buildCategoryNav(categories, anchorPrefix));
-  categories.forEach((category) => container.appendChild(buildCategoryBlock(category, anchorPrefix)));
+  scrollContainer.innerHTML = "";
+  const contentDiv = document.createElement("div");
+  contentDiv.className = "space-y-6 animate-fadeIn";
+  scrollContainer.appendChild(contentDiv);
+  
+  const header = document.createElement("h3");
+  header.className = "text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-4";
+  header.textContent = `Search Results for "${escapeHtml(query)}"`;
+  contentDiv.appendChild(header);
+  
+  let matchCount = 0;
+  
+  // 1. Search KPIs
+  if (globalDashboardData.business_summary) {
+    const bs = globalDashboardData.business_summary;
+    const matchedKpis = [];
+    const kpiCards = [
+      { label: "Total Spend", desc: "Cumulative value of all active purchase contracts", value: bs.total_spend, field: 'total_spend' },
+      { label: "Active POs", desc: "Unique purchase orders currently being executed", value: bs.po_count, field: 'po_count' },
+      { label: "Approved Vendors", desc: "Contracted suppliers delivering raw materials", value: bs.vendor_count, field: 'vendor_count' },
+      { label: "Quality Checks", desc: "Inspections scheduled at manufacturer sites", value: bs.inspection_count, field: 'inspection_count' },
+      { label: "Quality Defects (NCR)", desc: "Active non-conformance reports registered", value: bs.ncr_count, field: 'ncr_count' },
+      { label: "Pending Queries", desc: "Clarifications/RFIs currently open for POs", value: bs.query_count, field: 'query_count' }
+    ];
+    
+    kpiCards.forEach(c => {
+      if (c.label.toLowerCase().includes(q) || c.desc.toLowerCase().includes(q)) {
+        matchedKpis.push(c);
+      }
+    });
+    
+    if (matchedKpis.length > 0) {
+      matchCount += matchedKpis.length;
+      const subHeading = document.createElement("h4");
+      subHeading.className = "text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-2.5 mt-2";
+      subHeading.textContent = "Matching Metrics";
+      contentDiv.appendChild(subHeading);
+      
+      const grid = document.createElement("div");
+      grid.className = "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-4";
+      
+      const colorMapping = {
+        total_spend: { icon: '<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>', colorClass: "border-t-brand-500 text-brand-400 bg-brand-950/40 border-brand-900/20" },
+        po_count: { icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8"/>', colorClass: "border-t-cyan-500 text-cyan-400 bg-cyan-950/40 border-cyan-900/20" },
+        vendor_count: { icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>', colorClass: "border-t-purple-500 text-purple-400 bg-purple-950/40 border-purple-900/20" },
+        inspection_count: { icon: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>', colorClass: "border-t-emerald-500 text-emerald-400 bg-emerald-950/40 border-emerald-900/20" },
+        ncr_count: { icon: '<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>', colorClass: "border-t-rose-500 text-rose-400 bg-rose-955/40 border-rose-900/20" },
+        query_count: { icon: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>', colorClass: "border-t-amber-500 text-amber-400 bg-amber-955/40 border-amber-900/20" }
+      };
+      
+      matchedKpis.forEach(k => {
+        const meta = colorMapping[k.field] || { icon: '', colorClass: '' };
+        const cardHtml = `
+          <div class="business-kpi-card flex flex-col gap-3.5 p-5 bg-slate-900/40 border border-slate-850 border-t-4 ${meta.colorClass.split(' ')[0]} rounded-2xl shadow">
+            <div class="flex items-center justify-between gap-4">
+              <span class="flex items-center justify-center w-9 h-9 rounded-xl ${meta.colorClass.split(' ').slice(1).join(' ')}">${iconSvg(meta.icon, 18)}</span>
+              <span class="text-xl font-extrabold text-slate-100">${k.field === 'total_spend' ? formatCurrency(k.value) : k.value.toLocaleString()}</span>
+            </div>
+            <div class="space-y-0.5">
+              <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider">${escapeHtml(k.label)}</h4>
+              <p class="text-xs text-slate-400 font-medium leading-relaxed">${escapeHtml(k.desc)}</p>
+            </div>
+          </div>
+        `;
+        grid.innerHTML += cardHtml;
+      });
+      contentDiv.appendChild(grid);
+    }
+  }
+  
+  // 2. Search Section Cards across ALL categories
+  const matchedSections = [];
+  const categories = globalDashboardData.categories || [];
+  categories.forEach(cat => {
+    cat.sections.forEach(section => {
+      const nameMatch = section.name.toLowerCase().includes(q);
+      const descMatch = (section.description || "").toLowerCase().includes(q);
+      const highlightMatch = (section.highlight || "").toLowerCase().includes(q);
+      const chartMatch = (section.charts || []).some(chart => (chart.title || "").toLowerCase().includes(q));
+      
+      if (nameMatch || descMatch || highlightMatch || chartMatch) {
+        matchedSections.push({ category: cat.name, section });
+      }
+    });
+  });
+  
+  if (matchedSections.length > 0) {
+    matchCount += matchedSections.length;
+    const subHeading = document.createElement("h4");
+    subHeading.className = "text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-2.5 mt-6";
+    subHeading.textContent = "Matching Operations Sections";
+    contentDiv.appendChild(subHeading);
+    
+    const grid = document.createElement("div");
+    grid.className = "grid grid-cols-1 gap-5";
+    
+    matchedSections.forEach(item => {
+      const card = buildSectionCard(item.section);
+      const header = card.querySelector(".flex.items-center.gap-2.5");
+      if (header) {
+        const badge = document.createElement("span");
+        badge.className = "px-2 py-0.5 rounded bg-brand-950 border border-brand-900/40 text-brand-400 text-[10px] font-extrabold uppercase ml-2.5";
+        badge.textContent = item.category;
+        header.appendChild(badge);
+      }
+      grid.appendChild(card);
+    });
+    contentDiv.appendChild(grid);
+  }
+  
+  if (matchCount === 0) {
+    const noResults = document.createElement("div");
+    noResults.className = "flex flex-col items-center justify-center py-16 text-center";
+    noResults.innerHTML = `
+      <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-900 border border-slate-850 text-slate-500 mb-4 shadow">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </div>
+      <p class="text-sm font-bold text-slate-400">No matching metrics or charts found</p>
+      <p class="text-xs text-slate-600 mt-1">Try another search term like "spend", "vendor", "inspection", or "NCR".</p>
+    `;
+    contentDiv.appendChild(noResults);
+  }
 }
 
 function renderAssistantDashboard(data) {
-  // Render the reply text in a standard assistant bubble
-  addMessage("assistant", `<p>${renderText(data.reply)}</p>`);
+  // Render a clean chat bubble saying the report was built
+  addMessage("assistant", `
+    <div class="flex flex-col gap-3">
+      <p>${renderText(data.reply)}</p>
+      <button class="inline-flex items-center justify-center gap-2 self-start px-4 py-2.5 bg-gradient-to-tr from-brand-600 to-brand-700 hover:from-brand-500 hover:to-brand-600 text-white text-xs font-bold rounded-xl shadow-md cursor-pointer transition-all duration-150" onclick="showDashboardModalDirectly()" type="button">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        Open Executive Dashboard
+      </button>
+    </div>
+  `);
   
-  // Create a separate, full-width container for the dashboard widgets
-  const dashboardWrap = document.createElement("div");
-  dashboardWrap.className = "w-full max-w-5xl mx-auto my-6 space-y-6 animate-fadeInUp dashboard-wrap-outer";
-  renderDashboardPanel(data, dashboardWrap);
-  messagesEl.appendChild(dashboardWrap);
-  
+  globalDashboardData = data;
+  displayDashboardData(data);
   scrollToBottom();
 }
 
 async function openDashboard() {
-  const bubble = addMessage("assistant", `<p class="italic text-slate-400">Loading Executive Business Dashboard...</p>`);
+  if (!dashboardModal) return;
+  
+  // Initialize loader state
+  const loader = document.getElementById("dashboard-modal-loader");
+  const body = document.getElementById("dashboard-modal-body");
+  
+  dashboardModal.classList.remove("hidden");
+  dashboardModal.classList.add("flex");
+  if (loader) {
+    loader.innerHTML = `
+      <div class="flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-955 border border-slate-850 shadow-md mb-6 relative">
+        <span class="absolute inset-0 rounded-2xl border-2 border-brand-500/20 border-t-brand-500 animate-spin"></span>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="text-brand-400 animate-pulse">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+      </div>
+      <h3 class="text-sm font-extrabold text-slate-200 mb-1.5" id="dashboard-loader-title">Connecting to Database...</h3>
+      <p class="text-xs text-slate-500 max-w-xs leading-relaxed" id="dashboard-loader-desc">Retrieving live purchase order data and computing trends.</p>
+    `;
+    loader.classList.remove("hidden");
+    loader.classList.add("flex");
+  }
+  if (body) {
+    body.classList.add("hidden");
+    body.classList.remove("flex");
+  }
+  
+  startDashboardLoader();
+  
   try {
     const res = await fetch("/api/dashboard");
     const data = await res.json();
+    stopDashboardLoader();
+    
     if (data.error) {
-      bubble.innerHTML = `<p class="text-rose-400 font-medium">${escapeHtml(data.error)}</p>`;
+      if (loader) {
+        loader.innerHTML = `
+          <div class="flex flex-col items-center justify-center p-6 text-center">
+            <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-rose-955/20 border border-rose-900/30 text-rose-400 mb-4">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            <p class="text-sm font-bold text-rose-400">Could not load the dashboard</p>
+            <p class="text-xs text-slate-500 mt-1">${escapeHtml(data.error)}</p>
+            <button class="mt-4 px-4 py-2 bg-slate-800 text-slate-200 text-xs font-semibold rounded-lg hover:bg-slate-700" onclick="closeDashboardModal()">Close</button>
+          </div>
+        `;
+      }
       return;
     }
     
-    bubble.innerHTML = `<p class="font-bold text-slate-100 mb-4">📊 Executive Procurement Dashboard</p>`;
-    
-    const dashboardWrap = document.createElement("div");
-    dashboardWrap.className = "w-full max-w-5xl mx-auto my-6 space-y-6 animate-fadeInUp dashboard-wrap-outer";
-    renderDashboardPanel(data, dashboardWrap);
-    messagesEl.appendChild(dashboardWrap);
-    
-    scrollToBottom();
+    globalDashboardData = data;
+    displayDashboardData(data);
   } catch (err) {
     console.error(err);
-    bubble.innerHTML = '<p class="text-rose-400">Could not load the dashboard right now.</p>';
+    stopDashboardLoader();
+    if (loader) {
+      loader.innerHTML = `
+        <div class="flex flex-col items-center justify-center p-6 text-center">
+          <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-rose-955/20 border border-rose-900/30 text-rose-400 mb-4">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <p class="text-sm font-bold text-rose-400">Connection Error</p>
+          <p class="text-xs text-slate-500 mt-1">Please check your network and database connection.</p>
+          <button class="mt-4 px-4 py-2 bg-slate-800 text-slate-200 text-xs font-semibold rounded-lg hover:bg-slate-700" onclick="closeDashboardModal()">Close</button>
+        </div>
+      `;
+    }
   }
 }
 
@@ -981,6 +1335,27 @@ if (dashboardBtn) dashboardBtn.addEventListener("click", openDashboard);
 if (sidebarExportBtn) {
   sidebarExportBtn.addEventListener("click", () => {
     window.print();
+  });
+}
+
+if (dashboardExportBtn) {
+  dashboardExportBtn.addEventListener("click", () => {
+    window.print();
+  });
+}
+
+if (dashboardCloseBtn) dashboardCloseBtn.addEventListener("click", closeDashboardModal);
+if (dashboardModal) {
+  dashboardModal.addEventListener("click", (e) => {
+    if (e.target === dashboardModal) {
+      closeDashboardModal();
+    }
+  });
+}
+
+if (dashboardSearchInput) {
+  dashboardSearchInput.addEventListener("input", (e) => {
+    handleDashboardSearch(e.target.value);
   });
 }
 
@@ -998,6 +1373,8 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     if (chartModal && !chartModal.classList.contains("hidden")) {
       closeChartModal();
+    } else if (dashboardModal && !dashboardModal.classList.contains("hidden")) {
+      closeDashboardModal();
     } else if (sidebar && sidebar.classList.contains("open")) {
       closeSidebar();
     }

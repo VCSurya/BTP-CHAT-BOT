@@ -8,52 +8,34 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=1.2" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
             sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
           },
           colors: {
             brand: {
               50: '#f0f7ff',
-              100: '#e0f2fe',
-              200: '#bae6fd',
-              500: '#0284c7',
-              600: '#0369a1',
-              700: '#075985',
-              800: '#0c4a6e',
-              900: '#0f172a',
-              950: '#020617'
-            },
-            neutralSlate: {
-              50: '#f8fafc',
-              100: '#f1f5f9',
-              200: '#e2e8f0',
-              300: '#cbd5e1',
-              400: '#94a3b8',
-              500: '#64748b',
-              600: '#475569',
-              700: '#334155',
-              800: '#1e293b',
-              900: '#0f172a'
+              100: '#e0effe',
+              200: '#bae0fd',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+              950: '#090e18'
             }
-          },
-          boxShadow: {
-            premium: '0 4px 20px -2px rgba(148, 163, 184, 0.12), 0 2px 8px -1px rgba(148, 163, 184, 0.08)',
-            premiumHover: '0 10px 30px -4px rgba(148, 163, 184, 0.18), 0 4px 12px -2px rgba(148, 163, 184, 0.12)',
-            popover: '0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 10px 10px -5px rgba(15, 23, 42, 0.04)',
           },
           keyframes: {
             fadeInUp: {
-              '0%': { opacity: '0', transform: 'translateY(16px)' },
+              '0%': { opacity: '0', transform: 'translateY(12px)' },
               '100%': { opacity: '1', transform: 'translateY(0)' },
             },
             fadeIn: {
@@ -62,129 +44,37 @@
             }
           },
           animation: {
-            fadeInUp: 'fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both',
-            fadeIn: 'fadeIn 0.3s ease both',
+            fadeInUp: 'fadeInUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both',
+            fadeIn: 'fadeIn 0.25s ease both',
           }
         }
       }
     }
   </script>
-
-  <style>
-    /* Premium custom scrollbar styling */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #e2e8f0;
-      border-radius: 99px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #cbd5e1;
-    }
-
-    /* Core layout resets */
-    .app {
-      display: flex;
-      height: 100vh;
-      height: 100dvh;
-      width: 100vw;
-      overflow: hidden;
-    }
-
-    /* Smooth transition presets */
-    .smooth-transition {
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    /* Structured tables custom layouts */
-    .custom-table-container table {
-      border-collapse: separate;
-      border-spacing: 0;
-      width: 100%;
-    }
-    
-    .custom-table-container th {
-      border-bottom: 2px solid #e2e8f0;
-    }
-
-    .custom-table-container tr:last-child td {
-      border-bottom: none;
-    }
-
-    /* Classic summary details custom indicator */
-    details.sql summary::marker, details.table-toggle summary::marker {
-      content: "";
-      display: none;
-    }
-    
-    details.sql summary::-webkit-details-marker, details.table-toggle summary::-webkit-details-marker {
-      display: none;
-    }
-
-    /* Elegant printing format for procurement reviews */
-    @media print {
-      body {
-        background: #ffffff !important;
-        color: #000000 !important;
-      }
-      #sidebar, #sidebar-overlay, #mobile-topbar, #composer, #suggestion-chips, #chart-modal, #login-overlay {
-        display: none !important;
-      }
-      .app {
-        display: block !important;
-        height: auto !important;
-        overflow: visible !important;
-      }
-      .chat-area {
-        display: block !important;
-        height: auto !important;
-        overflow: visible !important;
-        background: #ffffff !important;
-      }
-      #messages {
-        display: block !important;
-        height: auto !important;
-        overflow: visible !important;
-        padding: 0 !important;
-      }
-      .section-card, .category-block, .chart-wrap, .business-kpi-card, .top-list-card, .ai-insights-card {
-        page-break-inside: avoid;
-        border: 1px solid #e2e8f0 !important;
-        box-shadow: none !important;
-        background: #ffffff !important;
-        margin-bottom: 20px !important;
-      }
-    }
-  </style>
 </head>
-<body class="h-full bg-slate-50 text-slate-800 font-sans antialiased overflow-hidden">
+<body class="h-full bg-[#060813] text-slate-100 font-sans antialiased overflow-hidden">
 
-  <div class="app relative" id="app">
+  <div class="app" id="app">
 
-    <!-- ─── Sidebar (Premium Classic Corporate Sidebar) ─── -->
-    <aside class="sidebar fixed inset-y-0 left-0 z-50 flex flex-col w-72 bg-white border-r border-slate-200 text-slate-600 p-5 transition-transform duration-300 lg:translate-x-0 lg:static lg:h-full -translate-x-full" id="sidebar">
+    <!-- ─── Sidebar (Dark Navy Corporate Sidebar) ─── -->
+    <aside class="sidebar fixed inset-y-0 left-0 z-50 flex flex-col w-64 bg-slate-950 border-r border-slate-900 text-slate-400 p-4 transition-transform duration-300 lg:translate-x-0 lg:static lg:h-full -translate-x-full" id="sidebar">
       
-      <!-- Premium Brand Header -->
-      <div class="flex items-center justify-between pb-5 border-b border-slate-100 mb-5">
+      <!-- Brand Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-slate-900 mb-4">
         <div class="flex items-center gap-3">
-          <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-sky-400 text-white shadow-md shadow-brand-500/10" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-tr from-brand-600 to-cyan-500 text-white shadow-lg shadow-brand-500/20" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 2L2 7l10 5 10-5-10-5z"/>
               <path d="M2 17l10 5 10-5"/>
               <path d="M2 12l10 5 10-5"/>
             </svg>
           </div>
           <div class="flex flex-col leading-tight">
-            <strong class="text-slate-900 text-base font-extrabold tracking-tight">Adani Procura</strong>
-            <span class="text-[10px] text-brand-600 font-bold uppercase tracking-widest">Analytics Portal</span>
+            <strong class="text-white text-base font-bold tracking-tight">Adani Procura</strong>
+            <span class="text-[10px] text-slate-500 font-semibold uppercase tracking-widest">Adani Group</span>
           </div>
         </div>
-        <button id="sidebar-toggle" class="lg:flex hidden items-center justify-center w-8 h-8 rounded-lg hover:bg-slate-100 hover:text-slate-900 smooth-transition" type="button" aria-label="Collapse sidebar">
+        <button id="sidebar-toggle" class="lg:flex hidden items-center justify-center w-8 h-8 rounded-md hover:bg-slate-900 hover:text-white transition-colors" type="button" aria-label="Collapse sidebar">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="18" height="18" rx="2"/>
             <path d="M9 3v18"/>
@@ -192,1565 +82,265 @@
         </button>
       </div>
 
-      <!-- New Chat trigger with refined classical styling -->
-      <button id="new-chat-btn" class="flex items-center justify-center gap-2.5 w-full py-3 px-4 rounded-xl border border-dashed border-slate-200 text-slate-700 font-semibold text-sm hover:border-brand-500 hover:bg-brand-50/50 hover:text-brand-600 smooth-transition shadow-sm" type="button">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <!-- New Chat trigger -->
+      <button id="new-chat-btn" class="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl border border-dashed border-slate-800 text-slate-300 font-medium text-sm hover:border-brand-500 hover:bg-brand-50/10 hover:text-white transition-all duration-200" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 5v14M5 12h14"/>
         </svg>
-        Start New Conversation
+        New Chat
       </button>
 
+      <!-- Navigation links -->
       <nav class="flex-1 overflow-y-auto space-y-1 mt-6">
-        <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400 px-3 pb-2.5">Corporate Intelligence</div>
-        <button class="flex items-center gap-3 group w-full px-3 py-3 rounded-xl text-sm font-semibold hover:bg-slate-50 hover:text-brand-600 smooth-transition text-slate-600" data-action="dashboard" id="dashboard-btn" type="button">
-          <span class="text-slate-400 group-hover:text-brand-600 smooth-transition">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
-              <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
-            </svg>
-          </span>
+        <div class="text-[10px] uppercase font-bold tracking-wider text-slate-600 px-3 pb-2">Quick Actions</div>
+        <button class="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-semibold hover:bg-slate-900 hover:text-white transition-all text-slate-400" data-action="dashboard" id="dashboard-btn" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
           Executive Dashboard
         </button>
-        <button class="flex items-center gap-3 group w-full px-3 py-3 rounded-xl text-sm font-semibold hover:bg-slate-50 hover:text-brand-600 smooth-transition text-slate-600 cursor-pointer" id="sidebar-export-btn" type="button">
-          <span class="text-slate-400 group-hover:text-brand-600 smooth-transition">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-          </span>
-          Export PDF Intelligence
+        <button class="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-semibold hover:bg-slate-900 hover:text-white transition-all text-slate-400 cursor-pointer" id="sidebar-export-btn" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Export PDF Report
         </button>
       </nav>
 
-      <div class="pt-4 border-t border-slate-100 mt-auto space-y-3">
-        <div class="hidden flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100" id="user-profile-card">
-          <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-brand-600 text-white font-bold text-sm shadow-sm" id="user-avatar">U</div>
+      <!-- User Profile & Status Footer -->
+      <div class="pt-4 border-t border-slate-900 mt-auto space-y-3">
+        <div class="hidden flex items-center gap-3 p-2 rounded-lg bg-slate-900/50 border border-slate-900" id="user-profile-card">
+          <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-tr from-brand-800 to-brand-600 text-white font-bold text-base shadow" id="user-avatar">U</div>
           <div class="flex flex-col min-w-0 flex-1">
-            <span class="text-xs font-bold text-slate-800 truncate" id="user-name">Guest User</span>
-            <span class="text-[10px] text-slate-400 truncate" id="user-role">CPO Assistant</span>
+            <span class="text-sm font-semibold text-slate-200 truncate" id="user-name"></span>
+            <span class="text-xs text-slate-500 truncate" id="user-role"></span>
           </div>
         </div>
-        <div class="flex items-center gap-2 px-1 text-[11px] font-semibold text-slate-400" id="status-badge">
-          <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" id="status-dot"></span>
-          </span>
-          <span id="status-text">Connecting secure portal…</span>
+        <div class="flex items-center gap-2.5 px-2 text-xs font-medium text-slate-500" id="status-badge">
+          <span class="w-2 h-2 rounded-full bg-slate-600" id="status-dot"></span>
+          <span id="status-text">Checking connection…</span>
         </div>
       </div>
     </aside>
 
-    <header class="mobile-topbar flex lg:hidden items-center justify-between px-4 h-16 bg-white border-b border-slate-200 w-full z-40" id="mobile-topbar">
-      <button id="mobile-sidebar-btn" class="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-slate-50 text-slate-600 active:scale-95 smooth-transition" type="button" aria-label="Open menu">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <!-- ─── Mobile topbar (Sticky mobile header) ─── -->
+    <header class="mobile-topbar flex lg:hidden items-center justify-between px-4 h-14 bg-[#0a0f24] border-b border-slate-900 w-full" id="mobile-topbar">
+      <button id="mobile-sidebar-btn" class="flex items-center justify-center w-9 h-9 rounded-md hover:bg-slate-900 text-slate-400" type="button" aria-label="Open menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 12h18M3 6h18M3 18h18"/>
         </svg>
       </button>
       <div class="flex items-center gap-2">
-        <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-600 text-white shadow-sm" aria-hidden="true">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <div class="flex items-center justify-center w-7 h-7 rounded bg-brand-600 text-white shadow" aria-hidden="true">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
           </svg>
         </div>
-        <strong class="text-slate-900 text-sm font-extrabold tracking-tight">Adani Procura</strong>
+        <strong class="text-slate-100 text-sm font-bold tracking-tight">Adani Procura</strong>
       </div>
-      <button id="mobile-new-chat-btn" class="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-slate-50 text-slate-600 active:scale-95 smooth-transition" type="button" aria-label="New chat">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <button id="mobile-new-chat-btn" class="flex items-center justify-center w-9 h-9 rounded-md hover:bg-slate-900 text-slate-400" type="button" aria-label="New chat">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 5v14M5 12h14"/>
         </svg>
       </button>
     </header>
 
-    <!-- ─── Main Chat Panel (Flex column taking up right side) ─── -->
-    <div class="chat-area flex-1 flex flex-col bg-slate-50 relative min-w-0 h-full">
-      
-      <!-- Scrollable Message list -->
-      <main id="messages" class="messages flex-1 overflow-y-auto px-4 py-8 lg:px-8 space-y-6">
+    <!-- ─── Main Chat Panel (Flex column taking up left side) ─── -->
+    <div class="chat-area bg-[#060813]">
+      <main id="messages" class="messages flex-1 overflow-y-auto px-4 py-8 lg:px-6 space-y-4">
 
-        <div class="flex flex-col items-center justify-center text-center max-w-2xl mx-auto py-12 px-4 animate-fadeInUp" id="welcome-screen">
-          <div class="flex items-center justify-center w-20 h-20 rounded-3xl bg-white shadow-premium border border-slate-100 mb-8 text-brand-600 relative animate-pulse">
-            <div class="absolute inset-0 bg-brand-500/5 blur-xl rounded-full"></div>
-            <svg class="relative" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <!-- Welcome layout -->
+        <div class="flex flex-col items-center justify-center text-center max-w-lg mx-auto py-12 px-4 animate-fadeInUp" id="welcome-screen">
+          <div class="flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 shadow-md shadow-brand-500/10 mb-6 text-brand-500 animate-bounce">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M12 2L2 7l10 5 10-5-10-5z"/>
               <path d="M2 17l10 5 10-5"/>
               <path d="M2 12l10 5 10-5"/>
             </svg>
           </div>
-          <h1 class="text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
-            Adani Procurement Intelligence
-          </h1>
-          <p class="text-slate-500 text-sm leading-relaxed mb-10 max-w-lg">
-            Welcome to Procura. Ask me any analytic queries about purchase orders, vendors, shipment status, inspections, and procurement disconformities.
-          </p>
+          <h1 class="text-2xl lg:text-3xl font-extrabold text-slate-100 tracking-tight mb-2">Adani Procurement Analytics</h1>
+          <p class="text-sm text-slate-400 leading-relaxed mb-8">I'm Adani Procura, your procurement intelligence assistant. Ask me anything about purchase orders, vendors, status, dispatches, and disconformities.</p>
           
-          <div class="text-[11px] uppercase font-bold tracking-wider text-slate-400 mb-4">Frequently Asked Queries</div>
-          <div class="flex flex-wrap justify-center gap-2.5 max-w-2xl" id="suggestion-chips">
-            <button class="chip group flex items-center gap-2 px-5 py-3 rounded-xl bg-white border border-slate-200/80 text-xs font-semibold text-slate-700 shadow-sm hover:border-brand-500 hover:text-brand-600 hover:bg-brand-50/20 smooth-transition active:scale-95" data-prompt="Top 10 vendors by total PO value" type="button">
-              <svg class="text-slate-400 group-hover:text-brand-500 smooth-transition" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-              Top Suppliers by Spend
+          <div class="flex flex-wrap justify-center gap-2 max-w-xl" id="suggestion-chips">
+            <button class="chip group flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900/60 border border-slate-800 text-xs font-semibold text-slate-300 shadow-sm hover:border-brand-500 hover:text-brand-400 hover:bg-brand-950/20 transition-all duration-200" data-prompt="Top 10 vendors by total PO value" type="button">
+              <svg class="text-slate-400 group-hover:text-brand-500 transition-colors" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+              Top 10 vendors by spend
             </button>
-            <button class="chip group flex items-center gap-2 px-5 py-3 rounded-xl bg-white border border-slate-200/80 text-xs font-semibold text-slate-700 shadow-sm hover:border-brand-500 hover:text-brand-600 hover:bg-brand-50/20 smooth-transition active:scale-95" data-prompt="Show me PO status distribution" type="button">
-              <svg class="text-slate-400 group-hover:text-brand-500 smooth-transition" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
-              PO Status Breakdown
+            <button class="chip group flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900/60 border border-slate-800 text-xs font-semibold text-slate-300 shadow-sm hover:border-brand-500 hover:text-brand-400 hover:bg-brand-950/20 transition-all duration-200" data-prompt="Show me PO status distribution" type="button">
+              <svg class="text-slate-400 group-hover:text-brand-500 transition-colors" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+              PO status breakdown
             </button>
-            <button class="chip group flex items-center gap-2 px-5 py-3 rounded-xl bg-white border border-slate-200/80 text-xs font-semibold text-slate-700 shadow-sm hover:border-brand-500 hover:text-brand-600 hover:bg-brand-50/20 smooth-transition active:scale-95" data-prompt="Give me an overview of all materials" type="button">
-              <svg class="text-slate-400 group-hover:text-brand-500 smooth-transition" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-              Materials Procurement
+            <button class="chip group flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900/60 border border-slate-800 text-xs font-semibold text-slate-300 shadow-sm hover:border-brand-500 hover:text-brand-400 hover:bg-brand-950/20 transition-all duration-200" data-prompt="Give me an overview of all materials" type="button">
+              <svg class="text-slate-400 group-hover:text-brand-500 transition-colors" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+              Materials overview
             </button>
-            <button class="chip group flex items-center gap-2 px-5 py-3 rounded-xl bg-white border border-slate-200/80 text-xs font-semibold text-slate-700 shadow-sm hover:border-brand-500 hover:text-brand-600 hover:bg-brand-50/20 smooth-transition active:scale-95" data-prompt="How many inspections happened this month?" type="button">
-              <svg class="text-slate-400 group-hover:text-brand-500 smooth-transition" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-              Inspection Performance
+            <button class="chip group flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900/60 border border-slate-800 text-xs font-semibold text-slate-300 shadow-sm hover:border-brand-500 hover:text-brand-400 hover:bg-brand-950/20 transition-all duration-200" data-prompt="How many inspections happened this month?" type="button">
+              <svg class="text-slate-400 group-hover:text-brand-500 transition-colors" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              Recent inspections
             </button>
-            <button class="chip group flex items-center gap-2 px-5 py-3 rounded-xl bg-white border border-slate-200/80 text-xs font-semibold text-slate-700 shadow-sm hover:border-brand-500 hover:text-brand-600 hover:bg-brand-50/20 smooth-transition active:scale-95" data-prompt="Show dispatch status summary" type="button">
-              <svg class="text-slate-400 group-hover:text-brand-500 smooth-transition" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5a2 2 0 0 1-2 2h-1"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-              Dispatch & Shipments
+            <button class="chip group flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900/60 border border-slate-800 text-xs font-semibold text-slate-300 shadow-sm hover:border-brand-500 hover:text-brand-400 hover:bg-brand-950/20 transition-all duration-200" data-prompt="Show dispatch status summary" type="button">
+              <svg class="text-slate-400 group-hover:text-brand-500 transition-colors" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5a2 2 0 0 1-2 2h-1"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              Dispatch summary
             </button>
-            <button class="chip group flex items-center gap-2 px-5 py-3 rounded-xl bg-white border border-slate-200/80 text-xs font-semibold text-slate-700 shadow-sm hover:border-brand-500 hover:text-brand-600 hover:bg-brand-50/20 smooth-transition active:scale-95" data-prompt="Show me the full data dashboard" type="button">
-              <svg class="text-slate-400 group-hover:text-brand-500 smooth-transition" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-              Full Interactive Dashboard
+            <button class="chip group flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900/60 border border-slate-800 text-xs font-semibold text-slate-300 shadow-sm hover:border-brand-500 hover:text-brand-400 hover:bg-brand-950/20 transition-all duration-200" data-prompt="Show me the full data dashboard" type="button">
+              <svg class="text-slate-400 group-hover:text-brand-500 transition-colors" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              Full dashboard
             </button>
           </div>
         </div>
 
       </main>
 
-      <div class="px-4 pb-6 bg-slate-50 relative">
-        <div class="absolute -top-12 left-0 right-0 h-12 bg-gradient-to-t from-slate-50 to-transparent pointer-events-none"></div>
+      <!-- ─── Composer (Chat Input Area) ─── -->
+      <div class="px-4 pb-6 bg-[#060813] relative">
+        <!-- Fade overlay for top of composer -->
+        <div class="absolute -top-10 left-0 right-0 h-10 bg-gradient-to-t from-[#060813] to-transparent pointer-events-none"></div>
         
-        <form id="composer" class="max-w-4xl mx-auto" autocomplete="off">
-          <div class="flex items-end bg-white border border-slate-200/80 rounded-2xl shadow-premium focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-500/5 overflow-hidden smooth-transition">
-            <textarea id="input" rows="1" placeholder="Search POs, compare vendors, review inspections, analyze dispatches..." class="flex-1 resize-none max-h-40 py-4 px-5 bg-transparent text-slate-800 text-sm outline-none placeholder-slate-400 leading-relaxed font-medium" aria-label="Message Procura"></textarea>
-            <button id="send-btn" type="submit" class="flex items-center justify-center w-10 h-10 m-2 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-500 text-white shadow-md shadow-brand-500/15 hover:scale-105 active:scale-95 disabled:opacity-30 disabled:scale-100 disabled:shadow-none smooth-transition flex-shrink-0" aria-label="Send message" title="Send message">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <form id="composer" class="max-w-3xl mx-auto" autocomplete="off">
+          <div class="flex items-end bg-[#0c1024] border border-slate-850 rounded-2xl shadow-sm focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/10 overflow-hidden transition-all duration-150">
+            <textarea id="input" rows="1" placeholder="Ask about POs, vendors, inspections, dispatches, payments…" class="flex-1 resize-none max-h-40 py-3 px-4 bg-transparent text-slate-200 text-sm outline-none placeholder-slate-500 leading-relaxed" aria-label="Message Procura"></textarea>
+            <button id="send-btn" type="submit" class="flex items-center justify-center w-9 h-9 m-2 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-700 text-white shadow-md shadow-brand-500/20 hover:scale-105 active:scale-95 disabled:opacity-40 disabled:scale-100 disabled:shadow-none transition-all duration-150" aria-label="Send message" title="Send message">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M22 2L11 13"/>
                 <path d="M22 2L15 22l-4-9-9-4z"/>
               </svg>
             </button>
           </div>
-          <p class="text-[10px] text-slate-400 text-center mt-3 font-semibold tracking-wide uppercase">Press Enter to dispatch query • Shift + Enter for new line</p>
+          <p class="text-[10px] text-slate-500 text-center mt-2 font-medium">Procura can analyze your procurement database. Press Enter to send, Shift+Enter for newline.</p>
         </form>
       </div>
     </div>
 
-    <!-- ─── Chart Modal Preview (Full Screen Popup with Header Guard) ─── -->
-    <div id="chart-modal" class="fixed inset-0 z-[150] bg-slate-900/60 backdrop-blur-md hidden items-center justify-center p-4 sm:p-6 md:p-10">
-      <div class="bg-white border border-slate-100 rounded-3xl w-full max-w-5xl shadow-popover relative flex flex-col max-h-[92vh] md:max-h-[85vh] animate-fadeInUp overflow-hidden">
-        
-        <!-- Beautiful isolated Modal Header -->
-        <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4 md:px-8">
-          <h3 class="text-xs font-bold text-slate-900 uppercase tracking-widest flex items-center gap-2.5">
-            <span class="w-1.5 h-4.5 rounded-full bg-brand-500 block"></span>
-            Expanded Visual Analysis
-          </h3>
-          <button id="modal-close-btn" class="w-10 h-10 rounded-xl hover:bg-slate-50 text-slate-400 hover:text-slate-700 flex items-center justify-center smooth-transition cursor-pointer" type="button" aria-label="Close modal" title="Close modal">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M18 6L6 18M6 6l12 12"/>
-            </svg>
-          </button>
-        </div>
-
-        <!-- Scrollable/Sizable Modal Content Area (Never overflows screen bounds) -->
-        <div id="modal-chart-container" class="flex-1 flex flex-col min-h-0 px-6 pb-6 pt-4 md:px-8 md:pb-8">
-          <!-- Holds expanded chart dynamically sized to prevent overflows -->
+    <!-- ─── Chart Modal Preview (Full Screen Popup) ─── -->
+    <div id="chart-modal" class="fixed inset-0 z-[150] bg-slate-955/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+      <div class="bg-slate-900/95 border border-slate-800/80 rounded-3xl w-full max-w-4xl p-6 shadow-2xl relative flex flex-col max-h-[90vh] backdrop-blur-xl overflow-hidden">
+        <!-- Close button -->
+        <button id="modal-close-btn" class="absolute top-4 right-4 w-9 h-9 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer" type="button" aria-label="Close modal" title="Close modal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+        <!-- Modal Content -->
+        <div id="modal-chart-container" class="flex-1 flex flex-col min-h-0 mt-6 overflow-y-auto pr-1">
+          <!-- Holds expanded chart in full resolution -->
         </div>
       </div>
     </div>
 
-    <!-- ─── Sidebar overlay for mobile ─── -->
-    <div class="sidebar-overlay fixed inset-0 bg-slate-950/40 backdrop-blur-xs z-40 hidden" id="sidebar-overlay"></div>
+    <!-- ─── Executive Dashboard Modal (Centered Popup) ─── -->
+    <div id="dashboard-modal" class="fixed inset-0 z-[140] bg-slate-955/85 backdrop-blur-md hidden flex items-center justify-center p-4 animate-fadeIn">
+      <div class="bg-slate-900/95 border border-slate-850 rounded-3xl w-full max-w-6xl p-6 shadow-2xl relative flex flex-col h-[90vh] max-h-[90vh] backdrop-blur-xl overflow-hidden">
+        
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between pb-4 border-b border-slate-800/85 gap-4 shrink-0">
+          <div class="flex items-center gap-3">
+            <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-cyan-500 text-white shadow-lg shadow-brand-500/20" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+            </div>
+            <div class="flex flex-col">
+              <h2 class="text-base lg:text-lg font-extrabold text-slate-100 tracking-tight leading-tight">Executive Procurement Dashboard</h2>
+              <p class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Live SAP HANA Database Insights</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="dashboard-export-btn" class="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-800 hover:border-brand-500 hover:bg-brand-950/20 hover:text-brand-400 text-xs font-bold text-slate-300 transition-all duration-200 cursor-pointer" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Download PDF Report
+            </button>
+            <button id="dashboard-close-btn" class="w-9 h-9 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer" type="button" aria-label="Close dashboard" title="Close dashboard">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+        </div>
 
-    <div class="login-overlay fixed inset-0 z-[100] bg-slate-50 flex items-center justify-center p-4 animate-fadeIn" id="login-overlay">
-      <div class="w-full max-w-md bg-white border border-slate-200/60 rounded-3xl p-8 text-center shadow-premium animate-fadeInUp relative">
-        <div class="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-brand-500 to-sky-400 rounded-t-3xl"></div>
-        <div class="flex items-center justify-center w-16 h-16 mx-auto mb-6 rounded-2xl bg-brand-50 border border-brand-100 text-brand-600 shadow-sm">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <!-- Loader container -->
+        <div id="dashboard-modal-loader" class="flex-1 flex flex-col items-center justify-center text-center p-8">
+          <div class="flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-950 border border-slate-850 shadow-md mb-6 relative">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="text-brand-400 animate-pulse">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+            </svg>
+          </div>
+          <h3 class="text-sm font-extrabold text-slate-200 mb-1.5" id="dashboard-loader-title">Connecting to Database...</h3>
+          <p class="text-xs text-slate-500 max-w-xs leading-relaxed" id="dashboard-loader-desc">Retrieving live purchase order data and computing trends.</p>
+        </div>
+
+        <!-- Dashboard Content Body -->
+        <div id="dashboard-modal-body" class="flex-1 hidden flex flex-col lg:flex-row gap-6 mt-4 min-h-0">
+          <!-- Sidebar tabs -->
+          <div class="w-full lg:w-56 shrink-0 flex flex-row lg:flex-col gap-1.5 overflow-x-auto lg:overflow-x-visible pb-2.5 lg:pb-0 lg:border-r lg:border-slate-850/70 lg:pr-4" id="dashboard-categories-nav">
+            <!-- Populated dynamically -->
+          </div>
+
+          <!-- Main Panel Content -->
+          <div class="flex-1 flex flex-col min-h-0" id="dashboard-modal-panel-container">
+            <!-- Search container sticky -->
+            <div class="flex items-center gap-3 p-3 bg-slate-950/60 border border-slate-850/60 rounded-2xl mb-4 shrink-0 focus-within:border-brand-500/50 transition-colors" id="dashboard-search-container">
+              <svg class="text-slate-500 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input type="text" id="dashboard-search-input" placeholder="Search charts, metrics, or areas..." class="w-full bg-transparent text-xs text-slate-200 outline-none placeholder-slate-500" />
+            </div>
+            
+            <!-- Dynamic Scrollable Content Panel -->
+            <div class="flex-1 overflow-y-auto pr-1" id="dashboard-modal-content-scroll">
+              <!-- Grid/Charts here -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─── Sidebar overlay for mobile ─── -->
+    <div class="sidebar-overlay fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-45 hidden" id="sidebar-overlay"></div>
+
+    <!-- ─── Login / Identity Screen ─── -->
+    <div class="login-overlay fixed inset-0 z-[100] bg-[#060813] flex items-center justify-center p-4 animate-fadeIn" id="login-overlay">
+      <div class="w-full max-w-md bg-slate-900/80 border border-slate-800/80 rounded-3xl p-8 text-center shadow-2xl backdrop-blur-xl animate-fadeInUp">
+        <div class="flex items-center justify-center w-14 h-14 mx-auto mb-6 rounded-2xl bg-brand-950/50 border border-brand-900/30 text-brand-500 shadow shadow-brand-500/10">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M12 2L2 7l10 5 10-5-10-5z"/>
             <path d="M2 17l10 5 10-5"/>
             <path d="M2 12l10 5 10-5"/>
           </svg>
         </div>
-        <h2 class="text-2xl font-extrabold text-slate-950 tracking-tight mb-2">Adani Procurement Hub</h2>
-        <p class="text-sm text-slate-400 mb-8 leading-relaxed font-medium">Verify credentials via your Corporate ID to access databases</p>
+        <h2 class="text-2xl font-extrabold text-slate-100 tracking-tight mb-2">Adani Procurement Analytics</h2>
+        <p class="text-sm text-slate-400 mb-8 leading-relaxed">Enter your User ID to log into the portal</p>
         
         <form id="login-form" class="space-y-4" autocomplete="off">
           <div class="relative flex items-center">
-            <svg class="absolute left-4 text-slate-400" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg class="absolute left-4 text-slate-500" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
               <circle cx="12" cy="7" r="4"/>
             </svg>
-            <input type="text" id="login-userid" placeholder="Enter Adani Employee ID (e.g. ADANI100)" required class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm placeholder-slate-400 outline-none focus:border-brand-500 focus:bg-white focus:ring-4 focus:ring-brand-500/5 smooth-transition font-medium" autocomplete="off" />
+            <input type="text" id="login-userid" placeholder="Enter your User ID" required class="w-full pl-11 pr-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-slate-200 text-sm placeholder-slate-500 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all duration-150" autocomplete="off" />
           </div>
           
-          <button type="submit" class="relative flex items-center justify-center gap-2.5 w-full py-3.5 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-500 text-white text-sm font-bold shadow-md shadow-brand-500/10 hover:scale-[1.01] hover:shadow-brand-500/25 active:scale-100 smooth-transition" id="login-btn">
-            <span>Verify Portal Entrance</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <button type="submit" class="relative flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 to-brand-700 text-white text-sm font-semibold shadow-lg shadow-brand-500/20 hover:scale-[1.01] hover:shadow-brand-500/30 active:scale-100 transition-all duration-150" id="login-btn">
+            <span class="login-btn-text">Continue</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
           </button>
-          <p class="text-xs text-rose-500 text-left pt-1 font-semibold hidden" id="login-error"></p>
+          <p class="text-xs text-rose-500 text-left pt-1 hidden" id="login-error"></p>
         </form>
       </div>
     </div>
 
   </div>
 
-  <script>
-    "use strict";
-
-    /* ============================================================
-       Adani Procura — Client-side Operations and Dynamic Simulation Database fallback
-       ============================================================ */
-
-    // ─── LOCAL FALLBACK DATABASE SIMULATOR (Ensures playability without active backend server) ───
-    const MOCK_INTELLIGENCE_DB = {
-      userProfiles: {
-        "ADANI100": { FIRSTNAME: "Rajesh Kumar", ROLE: "VP of Global Supply Chain", DEPT: "Logistics Division" },
-        "ADANI200": { FIRSTNAME: "Sunita Sharma", ROLE: "Lead Audit Inspector", DEPT: "Quality Assurance Division" },
-        "ADANI300": { FIRSTNAME: "Amit Patel", ROLE: "Procurement Director", DEPT: "General Resources Division" }
-      },
-      materials: [
-        { material: "Structural Steel TMT 500D", spend: 450000000, percentage: 32, status: "High Stock" },
-        { material: "Portland Pozzolana Cement", spend: 280000000, percentage: 20, status: "Nominal" },
-        { material: "Heavy Excavator Hydraulics", spend: 310000000, percentage: 22, status: "Critical Shortage" },
-        { material: "Electrical Substation Transformers", spend: 180000000, percentage: 13, status: "In Transit" },
-        { material: "Industrial Concrete Mixers", spend: 120000000, percentage: 9, status: "Nominal" },
-        { material: "High Tensile Cables", spend: 60000000, percentage: 4, status: "Abundant" }
-      ],
-      vendors: [
-        { vendor: "Tata Steel Ltd.", spend: 1540000000, categories: "Metals & Castings", ratings: "4.8/5" },
-        { vendor: "UltraTech Cement Ltd.", spend: 980000000, categories: "Construction Raw", ratings: "4.5/5" },
-        { vendor: "Siemens India Logistics", spend: 850000000, categories: "High-voltage Grid Systems", ratings: "4.9/5" },
-        { vendor: "L&T Heavy Engineering", spend: 1120000000, categories: "Heavy Industrial Machinery", ratings: "4.7/5" },
-        { vendor: "BHEL Power Equipments", spend: 720000000, categories: "Turbines & Generators", ratings: "4.2/5" }
-      ],
-      inspections: [
-        { date: "June 02, 2026", vendor: "Tata Steel Ltd.", status: "Passed", ncr: "None", notes: "No defects found" },
-        { date: "June 05, 2026", vendor: "Siemens India", status: "Minor Issue", ncr: "NCR-2026-04", notes: "Calibrations offset" },
-        { date: "June 10, 2026", vendor: "BHEL Equipments", status: "Pending Recalibration", ncr: "NCR-2026-08", notes: "Structural welding audit" },
-        { date: "June 12, 2026", vendor: "UltraTech Cement", status: "Passed", ncr: "None", notes: "Compressive strengths validated" }
-      ],
-      dispatches: [
-        { trackingID: "TRK-0988", destination: "Adani Mundra Port", dispatchDate: "June 14, 2026", status: "In Transit", eta: "June 20, 2026" },
-        { trackingID: "TRK-1122", destination: "Adani Hazira Terminal", dispatchDate: "June 11, 2026", status: "Delivered", eta: "June 15, 2026" },
-        { trackingID: "TRK-3044", destination: "Adani Dhamra Plant", dispatchDate: "June 16, 2026", status: "Departed Port", eta: "June 22, 2026" }
-      ],
-      executiveDashboard: {
-        ai_insights: {
-          executive_summary: "Procurement spending is highly optimized but concentration risks are apparent, with critical metals dominating overall expenditure trends. Vendor response rates are nominal across primary contractors.",
-          key_observations: [
-            "Heavy concentration of expenditure in core metal structures (Structural Steel accounts for ~32% of material spend).",
-            "Non-conformance reports have declined by 12.4% following the introduction of the digital inspection audit pipeline.",
-            "Average lead time for international components is currently hovering around 32 days, slightly higher than the target SLA."
-          ],
-          recommendation: "Establish backup supply contracts for high-tensile steels and hydraulic modules to mitigate localized logistical bottlenecks at western terminals."
-        },
-        business_summary: {
-          total_spend: 5210000000,
-          po_count: 342,
-          vendor_count: 58,
-          inspection_count: 146,
-          ncr_count: 8,
-          query_count: 14,
-          top_vendors: [
-            { vendor: "Tata Steel Ltd.", spend: 1540000000 },
-            { vendor: "L&T Heavy Engineering", spend: 1120000000 },
-            { vendor: "UltraTech Cement Ltd.", spend: 980000000 },
-            { vendor: "Siemens India Logistics", spend: 850000005 },
-            { vendor: "BHEL Power Equipments", spend: 720000000 }
-          ],
-          top_categories: [
-            { category: "Heavy Steel Materials", count: 124 },
-            { category: "Industrial Concrete & Mixes", count: 86 },
-            { category: "Electrical Power Grids", count: 72 },
-            { category: "Heavy Hydraulics", count: 40 },
-            { category: "Logistical Freight Contracts", count: 20 }
-          ]
-        },
-        categories: [
-          {
-            name: "Procurement",
-            sections: [
-              {
-                category: "Procurement",
-                name: "Primary Spend Analytics Overview",
-                description: "Cumulative breakdown of corporate material allocation profiles",
-                highlight: "Structural steel and concrete account for more than half of the total allocation.",
-                kpis: [
-                  { label: "Gross Allocations", value: 5210000000, format: "decimal" },
-                  { label: "Active Commitments", value: 3400000000, format: "decimal" }
-                ],
-                trend: { change_pct: 8.4, current_30d: 420000000, previous_30d: 387400000 },
-                charts: [
-                  {
-                    title: "Allocation distribution by Material Type",
-                    type: "pie",
-                    labels: ["Structural Steel", "Portland Cement", "Hydraulics", "Transformers", "Mixers", "Cables"],
-                    datasets: [
-                      {
-                        label: "Allocated Rupees",
-                        data: [450000000, 280000000, 310000000, 180000000, 120000000, 60000000]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    };
-
-    const appContainer = document.getElementById("app");
-    const messagesEl = document.getElementById("messages");
-    const formEl = document.getElementById("composer");
-    const inputEl = document.getElementById("input");
-    const sendBtn = document.getElementById("send-btn");
-    const statusDot = document.getElementById("status-dot");
-    const statusText = document.getElementById("status-text");
-    const welcomeScreen = document.getElementById("welcome-screen");
-
-    const loginOverlay = document.getElementById("login-overlay");
-    const loginForm = document.getElementById("login-form");
-    const loginInput = document.getElementById("login-userid");
-    const loginBtn = document.getElementById("login-btn");
-    const loginError = document.getElementById("login-error");
-
-    const userProfileCard = document.getElementById("user-profile-card");
-    const userAvatar = document.getElementById("user-avatar");
-    const userName = document.getElementById("user-name");
-    const userRole = document.getElementById("user-role");
-
-    const sidebar = document.getElementById("sidebar");
-    const sidebarToggle = document.getElementById("sidebar-toggle");
-    const sidebarOverlay = document.getElementById("sidebar-overlay");
-    const newChatBtn = document.getElementById("new-chat-btn");
-    const mobileSidebarBtn = document.getElementById("mobile-sidebar-btn");
-    const mobileNewChatBtn = document.getElementById("mobile-new-chat-btn");
-
-    const chartModal = document.getElementById("chart-modal");
-    const modalCloseBtn = document.getElementById("modal-close-btn");
-    const modalChartContainer = document.getElementById("modal-chart-container");
-    const sidebarExportBtn = document.getElementById("sidebar-export-btn");
-    const dashboardBtn = document.getElementById("dashboard-btn");
-    const chipContainer = document.getElementById("suggestion-chips");
-
-    const CHART_COLORS = [
-      "#0284c7", "#10b981", "#f59e0b", "#8b5cf6",
-      "#ec4899", "#3b82f6", "#06b6d4", "#a855f7",
-      "#f43f5e", "#14b8a6", "#64748b", "#0ea5e9"
-    ];
-
-    let isWelcomeVisible = true;
-
-    function escapeHtml(text) {
-      const div = document.createElement("div");
-      div.textContent = text == null ? "" : String(text);
-      return div.innerHTML;
-    }
-
-    function renderText(text) {
-      return escapeHtml(text).replace(/\n/g, "<br>");
-    }
-
-    function scrollToBottom() {
-      requestAnimationFrame(() => {
-        messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: "smooth" });
-      });
-    }
-
-    function hideWelcomeScreen() {
-      if (!isWelcomeVisible) return;
-      isWelcomeVisible = false;
-      if (welcomeScreen) {
-        welcomeScreen.style.transition = "opacity 0.2s ease, transform 0.25s ease";
-        welcomeScreen.style.opacity = "0";
-        welcomeScreen.style.transform = "translateY(-12px)";
-        setTimeout(() => welcomeScreen.remove(), 250);
-      }
-    }
-
-    function openSidebar() {
-      sidebar.classList.remove("-translate-x-full");
-      sidebar.classList.add("translate-x-0");
-      sidebarOverlay.classList.remove("hidden");
-      document.body.style.overflow = "hidden";
-    }
-
-    function closeSidebar() {
-      sidebar.classList.add("-translate-x-full");
-      sidebar.classList.remove("translate-x-0");
-      sidebarOverlay.classList.add("hidden");
-      document.body.style.overflow = "";
-    }
-
-    if (sidebarToggle) sidebarToggle.addEventListener("click", () => {
-      if (sidebar.classList.contains("translate-x-0")) closeSidebar();
-      else openSidebar();
-    });
-    if (mobileSidebarBtn) mobileSidebarBtn.addEventListener("click", openSidebar);
-    if (sidebarOverlay) sidebarOverlay.addEventListener("click", closeSidebar);
-
-    function addMessage(role, htmlContent, opts = {}) {
-      hideWelcomeScreen();
-
-      const wrap = document.createElement("div");
-      wrap.className = `flex gap-4.5 max-w-4xl w-full mx-auto animate-fadeInUp ${role === "user" ? "justify-end" : "justify-start"}`;
-
-      const avatar = document.createElement("div");
-      if (role === "assistant") {
-        avatar.className = "w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-500 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm";
-        avatar.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-        </svg>`;
-      } else {
-        avatar.className = "w-9 h-9 rounded-xl bg-slate-200 border border-slate-300/60 text-slate-700 flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-xs shadow-xs select-none";
-        avatar.textContent = "You";
-      }
-
-      const bubble = document.createElement("div");
-      if (role === "assistant") {
-        bubble.className = "max-w-[85%] min-w-0 bg-white border border-slate-200/80 rounded-2xl rounded-tl-sm px-5 py-4 text-slate-800 text-sm shadow-premium leading-relaxed w-full" + 
-          (opts.error ? " border-red-200 bg-red-50/50 text-red-700" : "");
-      } else {
-        bubble.className = "max-w-[85%] min-w-0 bg-brand-600 rounded-2xl rounded-tr-sm px-5 py-4 text-white text-sm shadow-sm leading-relaxed font-medium";
-      }
-      bubble.innerHTML = htmlContent;
-
-      if (role === "assistant") {
-        wrap.appendChild(avatar);
-        wrap.appendChild(bubble);
-      } else {
-        wrap.appendChild(bubble);
-        wrap.appendChild(avatar);
-      }
-
-      messagesEl.appendChild(wrap);
-      scrollToBottom();
-      return bubble;
-    }
-
-    function showTyping() {
-      hideWelcomeScreen();
-
-      const wrap = document.createElement("div");
-      wrap.className = "flex gap-4.5 max-w-4xl w-full mx-auto animate-fadeInUp justify-start";
-      wrap.dataset.typing = "1";
-
-      const avatar = document.createElement("div");
-      avatar.className = "w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-500 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm";
-      avatar.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-      </svg>`;
-
-      const bubble = document.createElement("div");
-      bubble.className = "max-w-[85%] min-w-0 bg-white border border-slate-200/80 rounded-2xl rounded-tl-sm px-5 py-4 text-slate-700 shadow-premium";
-      bubble.innerHTML = `<div class="flex items-center gap-1.5 py-1">
-        <span class="w-2 h-2 rounded-full bg-brand-500 animate-bounce" style="animation-delay: 0.1s"></span>
-        <span class="w-2 h-2 rounded-full bg-brand-500 animate-bounce" style="animation-delay: 0.2s"></span>
-        <span class="w-2 h-2 rounded-full bg-brand-500 animate-bounce" style="animation-delay: 0.3s"></span>
-      </div>`;
-
-      wrap.appendChild(avatar);
-      wrap.appendChild(bubble);
-      messagesEl.appendChild(wrap);
-      scrollToBottom();
-      return wrap;
-    }
-
-    function buildTable(table) {
-      if (!table || !table.columns || !table.columns.length) return "";
-      const head = table.columns.map((c) => `<th class="px-5 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider bg-slate-50 border-b border-slate-200 sticky top-0">${escapeHtml(c)}</th>`).join("");
-      const body = table.rows
-        .map(
-          (row) =>
-            `<tr class="hover:bg-slate-50/80 border-b border-slate-100 transition-colors">` +
-            table.columns
-              .map((c) => `<td class="px-5 py-3.5 text-sm text-slate-700 whitespace-nowrap">${escapeHtml(row[c])}</td>`)
-              .join("") +
-            "</tr>"
-        )
-        .join("");
-      return `
-        <details class="table-toggle border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-premium mt-4" open>
-          <summary class="cursor-pointer px-5 py-3.5 bg-white hover:bg-slate-50 text-sm font-bold text-slate-700 select-none flex items-center gap-2 transition-colors border-b border-slate-200">
-            <span class="text-xs text-slate-400">▼</span>
-            Procurement Dataset Information (${table.rows.length} row${table.rows.length === 1 ? "" : "s"})
-          </summary>
-          <div class="overflow-x-auto max-h-80 custom-table-container">
-            <table class="min-w-full divide-y divide-slate-200">
-              <thead><tr>${head}</tr></thead>
-              <tbody class="divide-y divide-slate-100 bg-white">${body}</tbody>
-            </table>
-          </div>
-        </details>`;
-    }
-
-    function renderChart(canvas, chart) {
-      const isPie = chart.type === "pie" || chart.type === "doughnut";
-      const datasets = chart.datasets.map((ds, i) => {
-        if (isPie) {
-          return {
-            label: ds.label,
-            data: ds.data,
-            backgroundColor: chart.labels.map(
-              (_, idx) => CHART_COLORS[idx % CHART_COLORS.length]
-            ),
-            borderColor: "#ffffff",
-            borderWidth: 2,
-          };
-        }
-        const color = CHART_COLORS[i % CHART_COLORS.length];
-        return {
-          label: ds.label,
-          data: ds.data,
-          backgroundColor: chart.type === "line" ? "transparent" : color + "33",
-          borderColor: color,
-          borderWidth: 2.5,
-          tension: 0.35,
-          pointRadius: 4,
-          pointBackgroundColor: color,
-          pointBorderColor: "#ffffff",
-          pointBorderWidth: 2,
-          pointHoverRadius: 6,
-          fill: chart.type === "line",
-        };
-      });
-
-      const showLegend = isPie || chart.datasets.length > 1;
-
-      if (canvas.chartInstance) {
-        try {
-          canvas.chartInstance.destroy();
-        } catch (err) {
-          console.warn("Chart destroy failed:", err);
-        }
-      }
-
-      canvas.chartInstance = new Chart(canvas.getContext("2d"), {
-        type: chart.type,
-        data: { labels: chart.labels, datasets },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: {
-            duration: 700,
-            easing: "easeOutQuart",
-          },
-          plugins: {
-            legend: {
-              display: showLegend,
-              position: isPie ? "bottom" : "top",
-              labels: {
-                color: "#475569",
-                boxWidth: 10,
-                boxHeight: 10,
-                borderRadius: 99,
-                useBorderRadius: true,
-                padding: 14,
-                font: { family: "'Inter', sans-serif", size: 11, weight: "500" },
-              },
-            },
-            tooltip: {
-              backgroundColor: "#0f172a",
-              titleColor: "#ffffff",
-              bodyColor: "#cbd5e1",
-              borderColor: "#1e293b",
-              borderWidth: 1,
-              cornerRadius: 12,
-              padding: 12,
-              titleFont: { family: "'Inter', sans-serif", weight: "700" },
-              bodyFont: { family: "'Inter', sans-serif" },
-            },
-          },
-          scales: isPie
-            ? {}
-            : {
-                x: {
-                  ticks: { color: "#64748b", font: { size: 10, weight: "500" } },
-                  grid: { color: "rgba(0, 0, 0, 0.04)", drawBorder: false },
-                },
-                y: {
-                  ticks: { color: "#64748b", font: { size: 10, weight: "500" } },
-                  grid: { color: "rgba(0, 0, 0, 0.04)", drawBorder: false },
-                },
-              },
-        },
-      });
-    }
-
-    function buildChartCard(chart, isModal = false) {
-      const chartWrap = document.createElement("div");
-      
-      // Clean borderless, shadowless layout if this card is inside the modal container
-      if (isModal) {
-        chartWrap.className = "flex-1 flex flex-col min-h-0 w-full h-full";
-      } else {
-        chartWrap.className = "chart-wrap bg-white border border-slate-200 rounded-2xl p-5 shadow-premium hover:shadow-premiumHover smooth-transition flex flex-col mt-4";
-      }
-
-      // Card Header Elements
-      const header = document.createElement("div");
-      header.className = "chart-card-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3.5 pb-4 border-b border-slate-100 mb-3";
-
-      if (!isModal) {
-        const t = document.createElement("p");
-        t.className = "text-xs font-bold text-slate-400 uppercase tracking-wider";
-        t.textContent = chart.title || "Core Metric Visualizer";
-        header.appendChild(t);
-      }
-
-      // Controls Wrapper (Styled responsively)
-      const controls = document.createElement("div");
-      controls.className = "flex items-center gap-2 flex-wrap w-full sm:w-auto sm:justify-end";
-
-      // Select Chart Type
-      const typeSelect = document.createElement("select");
-      typeSelect.className = "text-[11px] font-bold text-slate-600 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 outline-none cursor-pointer hover:bg-slate-100 smooth-transition max-w-[110px] truncate";
-      typeSelect.title = "Chart Visual Mapping";
-      const types = [
-        { label: "Bar Analytics", value: "bar" },
-        { label: "Linear Flow", value: "line" },
-        { label: "Proportion Pie", value: "pie" },
-        { label: "Doughnut Arc", value: "doughnut" }
-      ];
-      types.forEach(opt => {
-        const option = document.createElement("option");
-        option.value = opt.value;
-        option.textContent = opt.label;
-        if (opt.value === chart.type) option.selected = true;
-        typeSelect.appendChild(option);
-      });
-      controls.appendChild(typeSelect);
-
-      // Sort ordering configuration
-      const sortSelect = document.createElement("select");
-      sortSelect.className = "text-[11px] font-bold text-slate-600 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 outline-none cursor-pointer hover:bg-slate-100 smooth-transition max-w-[110px] truncate";
-      sortSelect.title = "Dataset sorting";
-      const sorts = [
-        { label: "Original Sort", value: "original" },
-        { label: "High → Low", value: "desc" },
-        { label: "Low → High", value: "asc" }
-      ];
-      sorts.forEach(opt => {
-        const option = document.createElement("option");
-        option.value = opt.value;
-        option.textContent = opt.label;
-        sortSelect.appendChild(option);
-      });
-      controls.appendChild(sortSelect);
-
-      // Limiter counts filter
-      const limitSelect = document.createElement("select");
-      limitSelect.className = "text-[11px] font-bold text-slate-600 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 outline-none cursor-pointer hover:bg-slate-100 smooth-transition max-w-[110px] truncate";
-      limitSelect.title = "Data density limiter";
-      const limits = [
-        { label: "All Records", value: "all" },
-        { label: "Top 5", value: "5" },
-        { label: "Top 10", value: "10" }
-      ];
-      limits.forEach(opt => {
-        const option = document.createElement("option");
-        option.value = opt.value;
-        option.textContent = opt.label;
-        limitSelect.appendChild(option);
-      });
-      controls.appendChild(limitSelect);
-
-      // Raw Image Download Button
-      const exportBtn = document.createElement("button");
-      exportBtn.className = "flex items-center justify-center w-8 h-8 rounded-lg border border-slate-200 text-slate-500 bg-slate-50 hover:bg-slate-100 hover:text-slate-700 active:scale-95 smooth-transition cursor-pointer";
-      exportBtn.title = "Download Chart Image";
-      exportBtn.type = "button";
-      exportBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-        <polyline points="7 10 12 15 17 10"/>
-        <line x1="12" y1="15" x2="12" y2="3"/>
-      </svg>`;
-      controls.appendChild(exportBtn);
-
-      if (!isModal) {
-        const expandBtn = document.createElement("button");
-        expandBtn.className = "flex items-center justify-center w-8 h-8 rounded-lg border border-slate-200 text-slate-500 bg-slate-50 hover:bg-slate-100 hover:text-slate-700 active:scale-95 smooth-transition cursor-pointer";
-        expandBtn.title = "Maximize Display Canvas";
-        expandBtn.type = "button";
-        expandBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
-        </svg>`;
-        expandBtn.addEventListener("click", () => openChartInModal(chart));
-        controls.appendChild(expandBtn);
-      }
-
-      header.appendChild(controls);
-      chartWrap.appendChild(header);
-
-      const box = document.createElement("div");
-      
-      // Dynamic non-overflow bounds depending on the card context
-      if (isModal) {
-        box.className = "relative w-full flex-1 min-h-[300px] sm:min-h-[350px] md:min-h-[420px] max-h-[55vh] mt-4";
-      } else {
-        box.className = "chart-canvas-box relative w-full h-[280px] mt-2";
-      }
-      
-      const canvas = document.createElement("canvas");
-      box.appendChild(canvas);
-      chartWrap.appendChild(box);
-
-      const originalChartData = {
-        type: chart.type,
-        title: chart.title || "Analytics Grid",
-        labels: [...(chart.labels || [])],
-        datasets: (chart.datasets || []).map(ds => ({
-          label: ds.label || "",
-          data: [...(ds.data || [])]
-        }))
-      };
-
-      // Re-trigger visual graphics recalculation
-      function updateChart() {
-        const typeVal = typeSelect.value;
-        const sortVal = sortSelect.value;
-        const limitVal = limitSelect.value;
-
-        let labels = [...originalChartData.labels];
-        let datasets = originalChartData.datasets.map(ds => ({
-          label: ds.label,
-          data: [...ds.data]
-        }));
-
-        if (sortVal !== "original" && labels.length > 0 && datasets.length > 0) {
-          const indices = Array.from({ length: labels.length }, (_, idx) => idx);
-          indices.sort((a, b) => {
-            const valA = Number(datasets[0].data[a]) || 0;
-            const valB = Number(datasets[0].data[b]) || 0;
-            return sortVal === "desc" ? valB - valA : valA - valB;
-          });
-
-          labels = indices.map(idx => labels[idx]);
-          datasets = datasets.map(ds => ({
-            ...ds,
-            data: indices.map(idx => ds.data[idx])
-          }));
-        }
-
-        if (limitVal !== "all") {
-          const limitNum = parseInt(limitVal, 10);
-          labels = labels.slice(0, limitNum);
-          datasets = datasets.map(ds => ({
-            ...ds,
-            data: ds.data.slice(0, limitNum)
-          }));
-        }
-
-        const updatedConfig = {
-          type: typeVal,
-          title: originalChartData.title,
-          labels: labels,
-          datasets: datasets
-        };
-
-        try {
-          renderChart(canvas, updatedConfig);
-        } catch (err) {
-          console.error("Re-render graphics failed:", err);
-        }
-      }
-
-      typeSelect.addEventListener("change", updateChart);
-      sortSelect.addEventListener("change", updateChart);
-      limitSelect.addEventListener("change", updateChart);
-
-      exportBtn.addEventListener("click", () => {
-        try {
-          const link = document.createElement("a");
-          const titleClean = (chart.title || "chart").toLowerCase().replace(/[^a-z0-9]+/g, "_");
-          link.download = `adani_procura_${titleClean}.png`;
-          link.href = canvas.toDataURL("image/png");
-          link.click();
-        } catch (err) {
-          console.error("Error creating image exporter snapshot:", err);
-        }
-      });
-
-      try {
-        renderChart(canvas, chart);
-      } catch (err) {
-        console.error("Initial chart visualization layout creation failed:", err);
-        return null;
-      }
-
-      return chartWrap;
-    }
-
-    function openChartInModal(chart) {
-      if (!modalChartContainer || !chartModal) return;
-      modalChartContainer.innerHTML = "";
-      const modalChartCard = buildChartCard(chart, true);
-      if (modalChartCard) {
-        modalChartContainer.appendChild(modalChartCard);
-        chartModal.classList.remove("hidden");
-        chartModal.classList.add("flex");
-      }
-    }
-
-    function closeChartModal() {
-      if (chartModal) {
-        chartModal.classList.add("hidden");
-        chartModal.classList.remove("flex");
-      }
-      if (modalChartContainer) {
-        modalChartContainer.innerHTML = "";
-      }
-    }
-
-    const CATEGORY_ICONS = {
-      "Procurement": '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>',
-      "Quality & Inspection": '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
-      "Dispatches & Freight": '<rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5a2 2 0 0 1-2 2h-1"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>'
-    };
-    const DEFAULT_ICON = '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>';
-
-    function iconSvg(paths, size = 16) {
-      return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
-    }
-
-    function formatKpiValue(kpi) {
-      const n = Number(kpi.value) || 0;
-      if (kpi.format === "decimal") {
-        return "₹" + (n >= 10000000 ? (n / 10000000).toFixed(2) + " Cr" : n.toLocaleString());
-      }
-      return Math.round(n).toLocaleString();
-    }
-
-    function buildKpiTile(kpi) {
-      return `
-        <div class="flex flex-col gap-1.5 p-4 bg-slate-50 border border-slate-200/60 rounded-xl min-w-[140px] flex-1">
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${escapeHtml(kpi.label)}</span>
-          <span class="text-xl font-extrabold text-slate-900 leading-tight">${formatKpiValue(kpi)}</span>
-        </div>`;
-    }
-
-    function buildTrendBadge(trend) {
-      if (!trend) return "";
-      const up = trend.change_pct >= 0;
-      const arrow = up ? "M12 19V5M5 12l7-7 7 7" : "M12 5v14M5 12l7 7 7-7";
-      const badgeColor = up ? "text-emerald-700 bg-emerald-50 border-emerald-200" : "text-rose-700 bg-rose-50 border-rose-200";
-      return `
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${badgeColor}">
-          ${iconSvg(`<path d="${arrow}"/>`, 12)}
-          ${Math.abs(trend.change_pct).toFixed(1)}% vs prior 30d
-        </span>`;
-    }
-
-    function buildSectionCard(section) {
-      const card = document.createElement("div");
-      card.className = "section-card bg-white border border-slate-200 rounded-2xl p-6 shadow-premium transition-all hover:-translate-y-0.5 hover:shadow-premiumHover";
-
-      const kpiTiles = (section.kpis || []).map(buildKpiTile).join("");
-      const trendHtml = buildTrendBadge(section.trend);
-      const highlightHtml = section.highlight
-        ? `<div class="flex items-start gap-3 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-medium leading-relaxed mb-5">
-            <span class="text-amber-600 mt-0.5 flex-shrink-0">${iconSvg('<path d="M13 2 3 14h7l-1 8 11-12h-7l1-8z"/>', 14)}</span>
-            <p class="text-amber-800 font-semibold leading-relaxed">${escapeHtml(section.highlight)}</p>
-           </div>`
-        : "";
-
-      card.innerHTML = `
-        <div class="flex items-center justify-between gap-4 flex-wrap mb-3.5">
-          <div class="flex items-center gap-2.5">
-            <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-50 border border-brand-100 text-brand-600">${iconSvg(CATEGORY_ICONS[section.category] || DEFAULT_ICON, 16)}</span>
-            <h4 class="text-sm font-extrabold text-slate-900 tracking-tight">${escapeHtml(section.name)}</h4>
-          </div>
-          ${trendHtml}
-        </div>
-        ${section.description ? `<p class="text-xs text-slate-400 font-semibold mb-5">${escapeHtml(section.description)}</p>` : ""}
-        <div class="flex flex-wrap gap-3 mb-5">${kpiTiles}</div>
-        ${highlightHtml}
-      `;
-
-      const grid = document.createElement("div");
-      grid.className = "chart-grid grid grid-cols-1 gap-4";
-      (section.charts || []).forEach((chart) => {
-        const chartCard = buildChartCard(chart);
-        if (chartCard) grid.appendChild(chartCard);
-      });
-      card.appendChild(grid);
-      return card;
-    }
-
-    function buildCategoryBlock(category, anchorPrefix) {
-      const slug = (anchorPrefix || "cat") + "-" + category.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-      const block = document.createElement("section");
-      block.className = "category-block space-y-5 scroll-mt-6";
-      block.id = slug;
-
-      const heading = document.createElement("div");
-      heading.className = "flex items-center gap-3.5 pb-2 border-b border-slate-200 mt-6";
-      heading.innerHTML = `
-        <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-brand-50 border border-brand-100 text-brand-600 shadow-xs">${iconSvg(CATEGORY_ICONS[category.name] || DEFAULT_ICON, 18)}</span>
-        <h3 class="text-base font-extrabold text-slate-900 tracking-tight">${escapeHtml(category.name)}</h3>
-        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-slate-500 bg-slate-100 border border-slate-200">${category.sections.length} Business Module${category.sections.length === 1 ? "" : "s"}</span>
-      `;
-      block.appendChild(heading);
-
-      const grid = document.createElement("div");
-      grid.className = "category-grid grid grid-cols-1 gap-6";
-      category.sections.forEach((section) => grid.appendChild(buildSectionCard(section)));
-      block.appendChild(grid);
-      return block;
-    }
-
-    function formatCurrency(val) {
-      if (val == null) return "₹0";
-      const n = Number(val) || 0;
-      if (n >= 10000000) { 
-        return "₹" + (n / 10000000).toFixed(2) + " Cr";
-      }
-      if (n >= 100000) { 
-        return "₹" + (n / 100000).toFixed(2) + " L";
-      }
-      return "₹" + n.toLocaleString();
-    }
-
-    function buildBusinessKpiGrid(bs) {
-      const grid = document.createElement("div");
-      grid.className = "business-kpi-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-6";
-
-      if (!bs) {
-        grid.innerHTML = '<p class="text-sm text-slate-400 italic font-semibold">No KPI stats available currently.</p>';
-        return grid;
-      }
-
-      const cards = [
-        {
-          label: "Total Allocation Spend",
-          value: formatCurrency(bs.total_spend),
-          desc: "Gross spend across corporate materials contracts",
-          icon: '<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
-          colorClass: "border-t-brand-500 text-brand-600 bg-brand-50 border-brand-100"
-        },
-        {
-          label: "Active Purchase Orders",
-          value: (bs.po_count || 0).toLocaleString(),
-          desc: "Live PO procurements within Mundra and logistics pipelines",
-          icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8"/>',
-          colorClass: "border-t-sky-500 text-sky-600 bg-sky-50 border-sky-100"
-        },
-        {
-          label: "Registered Suppliers",
-          value: (bs.vendor_count || 0).toLocaleString(),
-          desc: "Verified contractors across production plants",
-          icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>',
-          colorClass: "border-t-purple-500 text-purple-600 bg-purple-50 border-purple-100"
-        },
-        {
-          label: "Material Audit Checks",
-          value: (bs.inspection_count || 0).toLocaleString(),
-          desc: "Scheduled and concluded structural evaluations",
-          icon: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
-          colorClass: "border-t-emerald-500 text-emerald-600 bg-emerald-50 border-emerald-100"
-        },
-        {
-          label: "Non-Conformances (NCR)",
-          value: (bs.ncr_count || 0).toLocaleString(),
-          desc: "Open defect reports requiring supplier correction",
-          icon: '<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>',
-          colorClass: "border-t-rose-500 text-rose-600 bg-rose-50 border-rose-100"
-        },
-        {
-          label: "Open Query Tickets",
-          value: (bs.query_count || 0).toLocaleString(),
-          desc: "Commercial clarifications pending response",
-          icon: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
-          colorClass: "border-t-amber-500 text-amber-600 bg-amber-50 border-amber-100"
-        }
-      ];
-
-      grid.innerHTML = cards.map(c => `
-        <div class="business-kpi-card flex flex-col gap-4 p-5 bg-white border border-slate-200 border-t-4 ${c.colorClass.split(' ')[0]} rounded-2xl shadow-premium transition-all hover:-translate-y-0.5 hover:shadow-premiumHover">
-          <div class="flex items-center justify-between gap-4">
-            <span class="flex items-center justify-center w-10 h-10 rounded-xl ${c.colorClass.split(' ').slice(1).join(' ')}">${iconSvg(c.icon, 18)}</span>
-            <span class="text-2xl font-black text-slate-900">${c.value}</span>
-          </div>
-          <div class="space-y-1">
-            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">${escapeHtml(c.label)}</h4>
-            <p class="text-xs text-slate-400 font-semibold leading-relaxed">${escapeHtml(c.desc)}</p>
-          </div>
-        </div>
-      `).join("");
-
-      return grid;
-    }
-
-    function buildBusinessAnalyticsRow(bs) {
-      const row = document.createElement("div");
-      row.className = "dashboard-analytics-row grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6";
-
-      if (!bs) {
-        row.innerHTML = '<p class="text-sm text-slate-400 italic">No supply breakdown available.</p>';
-        return row;
-      }
-
-      const topVendors = bs.top_vendors || [];
-      const topCategories = bs.top_categories || [];
-
-      const maxSpend = topVendors.length ? Math.max(...topVendors.map(v => Number(v.spend) || 0)) : 1;
-      const maxCount = topCategories.length ? Math.max(...topCategories.map(c => Number(c.count) || 0)) : 1;
-
-      const vendorItems = topVendors.map(v => {
-        const spendVal = Number(v.spend) || 0;
-        const pct = Math.max(5, (spendVal / maxSpend) * 100);
-        return `
-          <div class="space-y-2">
-            <div class="flex items-center justify-between text-xs font-bold gap-4">
-              <span class="text-slate-700 truncate font-semibold" title="${escapeHtml(v.vendor)}">${escapeHtml(v.vendor)}</span>
-              <span class="text-slate-900 tabular-nums">${formatCurrency(spendVal)}</span>
-            </div>
-            <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-              <div class="h-full rounded-full bg-gradient-to-r from-brand-600 to-sky-400 transition-all duration-700" style="width: ${pct}%"></div>
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      const categoryItems = topCategories.map(c => {
-        const countVal = Number(c.count) || 0;
-        const pct = Math.max(5, (countVal / maxCount) * 100);
-        return `
-          <div class="space-y-2">
-            <div class="flex items-center justify-between text-xs font-bold gap-4">
-              <span class="text-slate-700 truncate font-semibold">${escapeHtml(c.category)}</span>
-              <span class="text-slate-900 tabular-nums">${countVal} POs</span>
-            </div>
-            <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-              <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-700" style="width: ${pct}%"></div>
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      row.innerHTML = `
-        <div class="top-list-card flex flex-col gap-4.5 p-6 bg-white border border-slate-200 rounded-2xl shadow-premium">
-          <div class="flex items-center gap-2.5 pb-4 border-b border-slate-100">
-            <span class="text-brand-600">${iconSvg('<circle cx="12" cy="8" r="7"/><path d="M5.21 14A10 10 0 0 0 12 22a10 10 0 0 0 6.79-8M3 10h18"/>', 18)}</span>
-            <h4 class="text-sm font-extrabold text-slate-800 tracking-tight">Dominant Spend Vendors</h4>
-          </div>
-          <div class="flex flex-col gap-4">
-            ${vendorItems || '<p class="text-xs text-slate-400 italic">No supplier allocations found.</p>'}
-          </div>
-        </div>
-        <div class="top-list-card flex flex-col gap-4.5 p-6 bg-white border border-slate-200 rounded-2xl shadow-premium">
-          <div class="flex items-center gap-2.5 pb-4 border-b border-slate-100">
-            <span class="text-emerald-500">${iconSvg('<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>', 18)}</span>
-            <h4 class="text-sm font-extrabold text-slate-800 tracking-tight">Highest Frequency Categories</h4>
-          </div>
-          <div class="flex flex-col gap-4">
-            ${categoryItems || '<p class="text-xs text-slate-400 italic">No category volumes recorded.</p>'}
-          </div>
-        </div>
-      `;
-
-      return row;
-    }
-
-    function buildAiInsightsBlock(ai) {
-      if (!ai) return document.createElement("div");
-      const card = document.createElement("div");
-      card.className = "ai-insights-card flex flex-col gap-4 p-6 bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-2xl border border-slate-950 shadow-premium mb-6";
-
-      const observations = ai.key_observations || [];
-      const obsHtml = observations.map(obs => `
-        <div class="flex items-start gap-3.5 text-xs leading-relaxed text-slate-300 font-medium">
-          <span class="text-sky-400 mt-0.5 flex-shrink-0">${iconSvg('<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>', 14)}</span>
-          <p class="flex-1 text-slate-300">${escapeHtml(obs)}</p>
-        </div>
-      `).join("");
-
-      card.innerHTML = `
-        <div class="flex items-center justify-between gap-4 pb-4 border-b border-slate-700/50">
-          <div class="flex items-center gap-2.5">
-            <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 text-sky-400 shadow-sm">${iconSvg('<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>', 16)}</span>
-            <h4 class="text-sm font-extrabold tracking-tight">AI Supply Chain Intel</h4>
-          </div>
-          <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-sky-300 bg-slate-800 border border-slate-700">Analytic Insight</span>
-        </div>
-        <div class="space-y-4">
-          ${ai.executive_summary ? `<p class="text-sm leading-relaxed text-slate-200 font-semibold">${escapeHtml(ai.executive_summary)}</p>` : ""}
-          <div class="flex flex-col gap-3.5">${obsHtml}</div>
-          ${ai.recommendation ? `
-            <div class="flex items-start gap-3.5 p-4.5 rounded-xl bg-sky-950/50 border border-sky-800 text-sky-200">
-              <span class="text-sky-400 mt-0.5 flex-shrink-0">${iconSvg('<path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z"/>', 16)}</span>
-              <div class="space-y-1">
-                <strong class="text-xs font-bold uppercase tracking-widest text-sky-400 block">Direct Strategic Corrective</strong>
-                <p class="text-xs leading-relaxed text-sky-100 font-medium">${escapeHtml(ai.recommendation)}</p>
-              </div>
-            </div>
-          ` : ""}
-        </div>
-      `;
-
-      return card;
-    }
-
-    function renderDashboardPanel(data, container) {
-      if (!container) return;
-      container.innerHTML = "";
-      const categories = data.categories || [];
-      
-      if (data.ai_insights) {
-        container.appendChild(buildAiInsightsBlock(data.ai_insights));
-      }
-      
-      if (data.business_summary) {
-        const heading = document.createElement("h2");
-        heading.className = "text-sm font-extrabold text-slate-800 tracking-wider uppercase mb-4 flex items-center gap-2 mt-4";
-        heading.innerHTML = `<span class="w-1.5 h-4.5 rounded-full bg-brand-500 block"></span>Executive Procurement Metrics`;
-        container.appendChild(heading);
-        
-        container.appendChild(buildBusinessKpiGrid(data.business_summary));
-        container.appendChild(buildBusinessAnalyticsRow(data.business_summary));
-        
-        const divider = document.createElement("hr");
-        divider.className = "border-slate-200/80 my-6";
-        container.appendChild(divider);
-      }
-
-      if (!categories.length) {
-        container.innerHTML += '<p class="text-sm text-slate-400 italic">No domain specific breakdowns loaded.</p>';
-        return;
-      }
-      
-      const secHeading = document.createElement("h2");
-      secHeading.className = "text-sm font-extrabold text-slate-800 tracking-wider uppercase mb-4 flex items-center gap-2";
-      secHeading.innerHTML = `<span class="w-1.5 h-4.5 rounded-full bg-emerald-500 block"></span>Domain Spending visualizer`;
-      container.appendChild(secHeading);
-
-      const anchorPrefix = "dash-" + Date.now();
-      categories.forEach((category) => container.appendChild(buildCategoryBlock(category, anchorPrefix)));
-    }
-
-    async function openDashboard() {
-      const bubble = addMessage("assistant", `<p class="italic text-slate-400 font-semibold flex items-center gap-2"><svg class="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.49 8.49l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.49-8.49l2.83-2.83"/></svg> Compiling Executive Analytics Dashboard...</p>`);
-      
-      // Simulate API load time
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      try {
-        let dashboardData;
-        try {
-          const res = await fetch("/api/dashboard");
-          dashboardData = await res.json();
-          if (dashboardData.error) throw new Error(dashboardData.error);
-        } catch (fetchErr) {
-          // Graceful fallback to rich mock data if backend api does not exist
-          dashboardData = MOCK_INTELLIGENCE_DB.executiveDashboard;
-        }
-
-        bubble.innerHTML = `<p class="font-extrabold text-slate-900 text-base mb-4 flex items-center gap-2">📊 Executive Portals Intelligence Report</p>`;
-        const dashboardContainer = document.createElement("div");
-        dashboardContainer.className = "dashboard-inline-container mt-4 space-y-6 w-full";
-        renderDashboardPanel(dashboardData, dashboardContainer);
-        bubble.appendChild(dashboardContainer);
-        
-        scrollToBottom();
-      } catch (err) {
-        console.error(err);
-        bubble.innerHTML = '<p class="text-rose-600 font-semibold">An unexpected network failure occurred during dashboard formulation.</p>';
-      }
-    }
-
-    if (dashboardBtn) dashboardBtn.addEventListener("click", () => {
-      openDashboard();
-      closeSidebar();
-    });
-
-    if (sidebarExportBtn) {
-      sidebarExportBtn.addEventListener("click", () => {
-        window.print();
-        closeSidebar();
-      });
-    }
-
-    if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeChartModal);
-    if (chartModal) {
-      chartModal.addEventListener("click", (e) => {
-        if (e.target === chartModal) {
-          closeChartModal();
-        }
-      });
-    }
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        if (chartModal && !chartModal.classList.contains("hidden")) {
-          closeChartModal();
-        } else if (sidebar && !sidebar.classList.contains("-translate-x-full")) {
-          closeSidebar();
-        }
-      }
-    });
-
-    if (chipContainer) {
-      chipContainer.addEventListener("click", (e) => {
-        const chip = e.target.closest(".chip");
-        if (!chip) return;
-        const prompt = chip.dataset.prompt;
-        if (!prompt) return;
-        inputEl.value = prompt;
-        autoGrow();
-        sendMessage(prompt);
-        inputEl.value = "";
-        autoGrow();
-      });
-    }
-
-    async function sendMessage(message) {
-      addMessage("user", `<p>${renderText(message)}</p>`);
-      const typingEl = showTyping();
-      sendBtn.disabled = true;
-
-      // Simulate network request delays
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      try {
-        let responseData;
-        let queryType = "text";
-        const cleanMsg = message.toLowerCase().trim();
-
-        try {
-          const res = await fetch("/api/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message }),
-          });
-          responseData = await res.json();
-        } catch (fetchErr) {
-          // Robust client-side database simulation fallback
-          if (cleanMsg.includes("vendor") || cleanMsg.includes("spend")) {
-            responseData = {
-              type: "data",
-              reply: "Here is the compiled corporate overview for our dominant contracted supplier profiles, representing primary spending allocations.",
-              chart: {
-                title: "Vendor Spending Comparisons (INR)",
-                type: "bar",
-                labels: MOCK_INTELLIGENCE_DB.vendors.map(v => v.vendor),
-                datasets: [{
-                  label: "Approved Contract Value",
-                  data: MOCK_INTELLIGENCE_DB.vendors.map(v => v.spend)
-                }]
-              },
-              table: {
-                columns: ["vendor", "spend", "categories", "ratings"],
-                rows: MOCK_INTELLIGENCE_DB.vendors.map(v => ({
-                  vendor: v.vendor,
-                  spend: formatCurrency(v.spend),
-                  categories: v.categories,
-                  ratings: v.ratings
-                }))
-              }
-            };
-          } else if (cleanMsg.includes("status") || cleanMsg.includes("breakdown") || cleanMsg.includes("po")) {
-            responseData = {
-              type: "data",
-              reply: "Our localized system logs record active orders status distribution profiles below.",
-              chart: {
-                title: "Purchase Order Current Lifecycle States",
-                type: "doughnut",
-                labels: ["Fully Executed", "Awaiting Dispatches", "Inspection Clearance", "Disconformities Registered"],
-                datasets: [{
-                  label: "Order counts",
-                  data: [154, 98, 82, 8]
-                }]
-              }
-            };
-          } else if (cleanMsg.includes("material")) {
-            responseData = {
-              type: "data",
-              reply: "I have calculated current material stock volumes and distribution ratios inside active corporate works locations.",
-              chart: {
-                title: "Primary Material Resource Values (INR)",
-                type: "pie",
-                labels: MOCK_INTELLIGENCE_DB.materials.map(m => m.material),
-                datasets: [{
-                  label: "Allocated Rupees",
-                  data: MOCK_INTELLIGENCE_DB.materials.map(m => m.spend)
-                }]
-              },
-              table: {
-                columns: ["material", "spend", "percentage", "status"],
-                rows: MOCK_INTELLIGENCE_DB.materials.map(m => ({
-                  material: m.material,
-                  spend: formatCurrency(m.spend),
-                  percentage: m.percentage + "%",
-                  status: m.status
-                }))
-              }
-            };
-          } else if (cleanMsg.includes("inspection")) {
-            responseData = {
-              type: "data",
-              reply: "Here are the compiled audit inspections performed across industrial terminals this month.",
-              table: {
-                columns: ["date", "vendor", "status", "ncr", "notes"],
-                rows: MOCK_INTELLIGENCE_DB.inspections
-              }
-            };
-          } else if (cleanMsg.includes("dispatch")) {
-            responseData = {
-              type: "data",
-              reply: "Here are dispatch delivery statuses from our freight transit system.",
-              table: {
-                columns: ["trackingID", "destination", "dispatchDate", "status", "eta"],
-                rows: MOCK_INTELLIGENCE_DB.dispatches
-              }
-            };
-          } else if (cleanMsg.includes("dashboard")) {
-            // Trigger executive visual panel inline inside chat bubble
-            typingEl.remove();
-            await openDashboard();
-            sendBtn.disabled = false;
-            inputEl.focus();
-            return;
-          } else {
-            responseData = {
-              type: "text",
-              reply: `Thank you for consulting Procura. I have registered your inquiry: "${message}".\n\nTo view dynamic visualizations or charts, try asking about: "Top suppliers by spend", "PO status breakdown", "Materials overview", "Recent inspections", or click the "Full Interactive Dashboard" suggestion chip below.`
-            };
-          }
-        }
-
-        typingEl.remove();
-
-        if (responseData.type === "data") {
-          renderAssistantData(responseData);
-        } else if (responseData.type === "error") {
-          addMessage("assistant", `<p>${renderText(responseData.reply)}</p>`, { error: true });
-        } else {
-          addMessage("assistant", `<p>${renderText(responseData.reply || responseData.error)}</p>`);
-        }
-      } catch (err) {
-        typingEl.remove();
-        addMessage(
-          "assistant",
-          "<p>Network anomaly detected — The connection to the data servers failed. Running simulation fallback modes...</p>",
-          { error: true }
-        );
-        console.error(err);
-      } finally {
-        sendBtn.disabled = false;
-        inputEl.focus();
-      }
-    }
-
-    function renderAssistantData(data) {
-      const bubble = addMessage("assistant", `<p class="font-semibold text-slate-800">${renderText(data.reply)}</p>`);
-
-      if (data.chart) {
-        const card = buildChartCard(data.chart);
-        if (card) {
-          bubble.appendChild(card);
-        }
-      }
-
-      if (data.table && data.table.rows && data.table.rows.length) {
-        bubble.insertAdjacentHTML("beforeend", buildTable(data.table));
-      }
-
-      if (data.truncated) {
-        bubble.insertAdjacentHTML(
-          "beforeend",
-          `<p class="text-xs text-slate-400 font-bold italic mt-2">Displaying partial sample metrics rows of database entries.</p>`
-        );
-      }
-
-      if (data.sql) {
-        bubble.insertAdjacentHTML(
-          "beforeend",
-          `<details class="sql mt-3 border border-slate-200 rounded-xl overflow-hidden bg-slate-900"><summary class="px-4 py-2 bg-slate-800 text-slate-300 font-semibold cursor-pointer">Compiled Analytical SQL</summary><pre class="p-4 text-xs text-brand-400 overflow-x-auto font-mono bg-slate-950">${escapeHtml(data.sql)}</pre></details>`
-        );
-      }
-
-      scrollToBottom();
-    }
-
-    function autoGrow() {
-      inputEl.style.height = "auto";
-      inputEl.style.height = Math.min(inputEl.scrollHeight, 160) + "px";
-    }
-
-    inputEl.addEventListener("input", autoGrow);
-
-    inputEl.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        formEl.requestSubmit();
-      }
-    });
-
-    formEl.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const message = inputEl.value.trim();
-      if (!message) return;
-      inputEl.value = "";
-      autoGrow();
-      sendMessage(message);
-    });
-
-    async function resetChat() {
-      try {
-        await fetch("/api/reset", { method: "POST" });
-      } catch (err) {
-        console.warn("Conversation reset endpoint skipped:", err);
-      }
-
-      messagesEl.innerHTML = "";
-      isWelcomeVisible = true;
-      
-      const ws = document.createElement("div");
-      ws.className = "flex flex-col items-center justify-center text-center max-w-2xl mx-auto py-12 px-4 animate-fadeInUp";
-      ws.id = "welcome-screen";
-      ws.innerHTML = `
-        <div class="flex items-center justify-center w-20 h-20 rounded-3xl bg-white shadow-premium border border-slate-100 mb-8 text-brand-600 relative">
-          <div class="absolute inset-0 bg-brand-500/5 blur-xl rounded-full"></div>
-          <svg class="relative" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-            <path d="M2 17l10 5 10-5"/>
-            <path d="M2 12l10 5 10-5"/>
-          </svg>
-        </div>
-        <h1 class="text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
-          Adani Procurement Intelligence
-        </h1>
-        <p class="text-slate-500 text-sm leading-relaxed mb-10 max-w-lg">
-          Welcome to Procura. Ask me any analytic queries about purchase orders, vendors, shipment status, inspections, and procurement disconformities.
-        </p>
-        <div class="text-[11px] uppercase font-bold tracking-wider text-slate-400 mb-4">Frequently Asked Queries</div>
-        <div class="flex flex-wrap justify-center gap-2.5 max-w-2xl" id="suggestion-chips">
-          <button class="chip group flex items-center gap-2 px-5 py-3 rounded-xl bg-white border border-slate-200/80 text-xs font-semibold text-slate-700 shadow-sm hover:border-brand-500 hover:text-brand-600 hover:bg-brand-50/20 smooth-transition active:scale-95" data-prompt="Top 10 vendors by total PO value" type="button">
-            <svg class="text-slate-400 group-hover:text-brand-500 smooth-transition" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-            Top Suppliers by Spend
-          </button>
-          <button class="chip group flex items-center gap-2 px-5 py-3 rounded-xl bg-white border border-slate-200/80 text-xs font-semibold text-slate-700 shadow-sm hover:border-brand-500 hover:text-brand-600 hover:bg-brand-50/20 smooth-transition active:scale-95" data-prompt="Show me PO status distribution" type="button">
-            <svg class="text-slate-400 group-hover:text-brand-500 smooth-transition" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
-            PO Status Breakdown
-          </button>
-          <button class="chip group flex items-center gap-2 px-5 py-3 rounded-xl bg-white border border-slate-200/80 text-xs font-semibold text-slate-700 shadow-sm hover:border-brand-500 hover:text-brand-600 hover:bg-brand-50/20 smooth-transition active:scale-95" data-prompt="Give me an overview of all materials" type="button">
-            <svg class="text-slate-400 group-hover:text-brand-500 smooth-transition" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-            Materials Procurement
-          </button>
-          <button class="chip group flex items-center gap-2 px-5 py-3 rounded-xl bg-white border border-slate-200/80 text-xs font-semibold text-slate-700 shadow-sm hover:border-brand-500 hover:text-brand-600 hover:bg-brand-50/20 smooth-transition active:scale-95" data-prompt="Show me the full data dashboard" type="button">
-            <svg class="text-slate-400 group-hover:text-brand-500 smooth-transition" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-            Full Interactive Dashboard
-          </button>
-        </div>
-      `;
-      messagesEl.appendChild(ws);
-
-      const newChipContainer = ws.querySelector("#suggestion-chips");
-      if (newChipContainer) {
-        newChipContainer.addEventListener("click", (e) => {
-          const chip = e.target.closest(".chip");
-          if (!chip) return;
-          const prompt = chip.dataset.prompt;
-          if (!prompt) return;
-          inputEl.value = prompt;
-          autoGrow();
-          sendMessage(prompt);
-          inputEl.value = "";
-          autoGrow();
-        });
-      }
-
-      closeSidebar();
-      inputEl.focus();
-    }
-
-    newChatBtn.addEventListener("click", resetChat);
-    if (mobileNewChatBtn) mobileNewChatBtn.addEventListener("click", resetChat);
-
-    (async function checkHealth() {
-      try {
-        const res = await fetch("/api/health");
-        const data = await res.json();
-        const up = data.database === "up";
-        statusDot.className = up ? "relative inline-flex rounded-full h-2 w-2 bg-emerald-500" : "relative inline-flex rounded-full h-2 w-2 bg-amber-500";
-        statusText.textContent = up ? `Connected • ${data.model}` : `Diagnostic Active`;
-      } catch (err) {
-        statusDot.className = "relative inline-flex rounded-full h-2 w-2 bg-emerald-500";
-        statusText.textContent = "Secure Local Databanks Connected";
-      }
-    })();
-
-    if (loginForm) {
-      loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const userId = loginInput.value.trim();
-        if (!userId) return;
-
-        loginBtn.disabled = true;
-        loginError.classList.add("hidden");
-        loginInput.disabled = true;
-
-        // Visual feedback simulated timeout
-        await new Promise(resolve => setTimeout(resolve, 600));
-
-        try {
-          let identityProfile;
-          try {
-            const res = await fetch("/api/user/identify", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ userId }),
-            });
-            const data = await res.json();
-            if (!res.ok || data.status !== "ok") throw new Error(data.error || "Profile invalid");
-            identityProfile = data.profile;
-          } catch (fetchErr) {
-            // Simulated validation lookup
-            if (MOCK_INTELLIGENCE_DB.userProfiles[userId]) {
-              identityProfile = MOCK_INTELLIGENCE_DB.userProfiles[userId];
-            } else {
-              // Create auto mock fallback profile for preview simplicity
-              identityProfile = {
-                FIRSTNAME: userId.replace(/[^A-Z]/g, '') || "Corporate User",
-                ROLE: "Lead Procurement Analyst",
-                DEPT: "Materials Allocation Unit"
-              };
-            }
-          }
-
-          loginOverlay.style.transition = "opacity 0.2s ease";
-          loginOverlay.style.opacity = "0";
-          setTimeout(() => loginOverlay.remove(), 200);
-
-          const name = identityProfile.FIRSTNAME || userId;
-          const role = identityProfile.ROLE || "CPO Executive Assistant";
-          
-          userName.textContent = name;
-          userRole.textContent = role;
-          userAvatar.textContent = name.charAt(0).toUpperCase();
-          userProfileCard.classList.remove("hidden");
-          
-          inputEl.focus();
-        } catch (err) {
-          loginError.textContent = "Identity identification declined. Verify ID credentials.";
-          loginError.classList.remove("hidden");
-        } finally {
-          loginBtn.disabled = false;
-          loginInput.disabled = false;
-        }
-      });
-    }
-
-    // Set initial entrance focusing parameters
-    window.onload = function () {
-      if (loginOverlay && !loginOverlay.classList.contains("hidden")) {
-        loginInput.focus();
-      } else {
-        inputEl.focus();
-      }
-    }
-  </script>
+  <script src="{{ url_for('static', filename='app.js') }}?v=1.2"></script>
 </body>
 </html>

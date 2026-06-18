@@ -1,10 +1,9 @@
 /* ============================================================
-   Procura — Premium Dark Theme CSS Resets
-   Pure layout transitions, dark table styles, and scrollbars
-   All core visual styling is handled natively by Tailwind CSS
+   Adani Procura — Essential Layout & Reset Stylesheet
+   Combines with Tailwind CSS for layouts and transitions
    ============================================================ */
 
-/* ─── Custom Scrollbars ─── */
+/* ─── Custom scrollbars for dark UI ─── */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -13,19 +12,18 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 /* ─── App Flex Layout ─── */
 .app {
   display: flex;
-  height: 100vh;
-  height: 100dvh;
   width: 100vw;
+  height: 100vh;
   overflow: hidden;
 }
 
@@ -34,11 +32,14 @@
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  height: 100%;
   min-width: 0;
-  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1), flex 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-
+.messages {
+  flex: 1;
+  overflow-y: auto;
+}
 
 /* ─── Data Tables & SQL Details ─── */
 .table-scroll {
@@ -122,6 +123,7 @@ pre.sql {
   overflow-x: auto;
   line-height: 1.7;
 }
+
 .chart-canvas-box {
   position: relative;
   height: 260px;
@@ -133,148 +135,103 @@ pre.sql {
   body {
     background: #ffffff !important;
     color: #000000 !important;
+    overflow: visible !important;
   }
   
-  /* Hide UI chrome */
-  #sidebar, .sidebar, .sidebar-overlay, .mobile-topbar, #composer, #suggestion-chips, #chart-modal, .login-overlay {
+  /* Hide all UI containers except the dashboard modal */
+  .app, #sidebar, .sidebar-overlay, #mobile-topbar, .chat-area, #composer, #suggestion-chips, #chart-modal {
     display: none !important;
   }
-
-  /* Chat container print styles */
-  .app {
-    display: block !important;
-    height: auto !important;
-    overflow: visible !important;
-    background: #ffffff !important;
-  }
   
-  .chat-area {
+  #dashboard-modal {
     display: block !important;
+    position: static !important;
+    width: 100% !important;
     height: auto !important;
-    overflow: visible !important;
+    min-height: 100% !important;
     background: #ffffff !important;
-  }
-  
-  #messages {
-    display: block !important;
-    height: auto !important;
+    color: #000000 !important;
     overflow: visible !important;
     padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
   }
-
-  /* Style chat bubbles for printing */
-  .flex.gap-3.max-w-3xl {
-    page-break-inside: avoid;
-    margin-bottom: 24px !important;
-  }
-
-  .flex.gap-3.max-w-3xl > div:first-child {
-    display: none !important; /* Hide avatar */
-  }
-
-  /* Assistant bubble */
-  .max-w-\[85\%\].min-w-0 {
+  
+  #dashboard-modal > div {
     max-width: 100% !important;
-    background: transparent !important;
+    max-height: none !important;
+    height: auto !important;
+    background: #ffffff !important;
     color: #000000 !important;
     border: none !important;
+    box-shadow: none !important;
     padding: 0 !important;
-    box-shadow: none !important;
+    overflow: visible !important;
+  }
+  
+  #dashboard-close-btn, #dashboard-export-btn, #dashboard-categories-nav, #dashboard-search-container {
+    display: none !important;
+  }
+  
+  #dashboard-modal-body {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  #dashboard-modal-panel-container {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  
+  #dashboard-modal-content-scroll {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
   }
 
-  /* User bubble */
-  .bg-gradient-to-tr.from-violet-600\/90.to-fuchsia-600\/80 {
-    background: #f1f5f9 !important;
-    color: #0f172a !important;
-    border: 1px solid #cbd5e1 !important;
-    border-radius: 12px !important;
-    max-width: 100% !important;
-    padding: 10px 14px !important;
-    box-shadow: none !important;
+  /* Font color resets */
+  h2, h3, h4, p, span, strong, td, th {
+    color: #000000 !important;
   }
-
-  /* Details SQL and data tables in print */
-  details.sql, details.data, details {
+  
+  details.sql, details.data {
     border: 1px solid #cbd5e1 !important;
     background: #ffffff !important;
     page-break-inside: avoid;
   }
-
+  
   details summary {
     background: #f8fafc !important;
     color: #0f172a !important;
     border-bottom: 1px solid #cbd5e1 !important;
   }
-
+  
   pre.sql {
     background: #f8fafc !important;
     color: #0284c7 !important;
     border-top: 1px solid #cbd5e1 !important;
   }
-
+  
   table {
     border-collapse: collapse !important;
   }
-
+  
   th {
     background: #f1f5f9 !important;
     color: #0f172a !important;
     border-bottom: 1px solid #cbd5e1 !important;
   }
-
+  
   td {
     color: #334155 !important;
     border-bottom: 1px solid #e2e8f0 !important;
   }
-
-  /* Dashboard Widgets in print */
-  .dashboard-main-heading {
-    page-break-before: always;
-    font-size: 18px !important;
-    border-bottom: 1px solid #cbd5e1 !important;
-    padding-bottom: 4px !important;
-    margin-top: 24px !important;
-    color: #0f172a !important;
-  }
-  .dashboard-main-heading:first-of-type {
-    page-break-before: avoid;
-  }
-
-  .business-kpi-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 12px !important;
-    page-break-inside: avoid;
-  }
-
-  .business-kpi-card {
-    border: 1px solid #cbd5e1 !important;
-    box-shadow: none !important;
-    background: #ffffff !important;
-    page-break-inside: avoid;
-  }
-
-  .dashboard-analytics-row {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 16px !important;
-    page-break-inside: avoid;
-    margin-top: 24px !important;
-  }
-
-  .top-list-card {
-    border: 1px solid #cbd5e1 !important;
-    box-shadow: none !important;
-    background: #ffffff !important;
-    page-break-inside: avoid;
-  }
-
-  .ai-insights-card {
-    border: 1px solid #cbd5e1 !important;
-    box-shadow: none !important;
-    background: #f8fafc !important;
-    page-break-inside: avoid;
-    margin-bottom: 24px !important;
-  }
-
+  
   .category-block {
     page-break-inside: avoid;
     border: 1px solid #cbd5e1 !important;
@@ -283,21 +240,18 @@ pre.sql {
     margin-top: 24px !important;
     background: #ffffff !important;
   }
-
-  .category-grid {
-    grid-template-columns: 1fr !important;
-  }
-
+  
   .section-card {
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    margin-bottom: 16px !important;
+    page-break-inside: avoid;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+    margin-top: 16px !important;
+    background: #ffffff !important;
   }
 
-  .chart-grid {
-    grid-template-columns: 1fr !important;
-    gap: 16px !important;
+  .chart-canvas-box {
+    background: #ffffff !important;
   }
 
   .chart-wrap {

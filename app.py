@@ -14,6 +14,7 @@ exposed to the client.
 """
 import logging
 import os
+import random
 import re
 import uuid
 
@@ -170,6 +171,232 @@ def _available_areas_text(tables: dict, search_term: str = None) -> str:
     return ", ".join(names[:6])
 
 
+COLLAPSED_GREETINGS = {
+    "hi", "helo", "hey", "hola", "greting", "gretings", "god morning", "god afternoon", "god evening",
+    "afternon", "evening", "howdy", "yo", "namaste", "god day", "thanks", "thank", "wasup", "sup", "hlo", "hlw"
+}
+
+CONVERSATIONAL_GREETINGS = {
+    "how are you",
+    "how are you doing",
+    "how is it going",
+    "hows it going",
+    "whats up",
+    "what up",
+    "wassup",
+    "how do you do",
+    "who are you",
+    "what are you",
+    "what is your name",
+}
+
+def _detect_greeting(message: str) -> bool:
+    cleaned = re.sub(r"[^\w\s]", "", message).strip().lower()
+    if not cleaned:
+        return False
+        
+    address_words = {"bot", "procura", "assistant", "there", "everyone", "all", "system"}
+    words = cleaned.split()
+    filtered_words = [w for w in words if w not in address_words]
+    if not filtered_words:
+        return False
+        
+    cleaned_filtered = " ".join(filtered_words)
+    if cleaned_filtered in CONVERSATIONAL_GREETINGS:
+        return True
+        
+    def collapse(w):
+        return re.sub(r"(.)\1+", r"\1", w)
+        
+    collapsed_words = [collapse(w) for w in filtered_words]
+    if len(collapsed_words) == 1:
+        return collapsed_words[0] in COLLAPSED_GREETINGS
+        
+    if len(collapsed_words) == 2:
+        comb = f"{collapsed_words[0]} {collapsed_words[1]}"
+        return comb in COLLAPSED_GREETINGS
+        
+    return False
+
+
+def _extract_user_greeting(message: str) -> tuple[str, str, int]:
+    cleaned = re.sub(r"[^\w\s]", "", message).strip().lower()
+    words = cleaned.split()
+    if not words:
+        return "", "", 0
+    
+    first_word = words[0]
+    
+    def collapse(w):
+        return re.sub(r"(.)\1+", r"\1", w)
+    
+    collapsed = collapse(first_word)
+    if collapsed not in COLLAPSED_GREETINGS:
+        found_stem = None
+        for stem in ("hi", "hello", "hey", "hola", "howdy", "yo", "sup", "hlo", "hlw"):
+            if first_word.startswith(stem):
+                found_stem = stem
+                break
+        if not found_stem:
+            return "", "", 0
+        collapsed = found_stem
+        
+    match = re.search(r"((.)\2{2,})$", first_word)
+    if match:
+        repeating_seq = match.group(1)
+        repeating_char = match.group(2)
+        return collapsed, repeating_char, len(repeating_seq)
+    
+    return collapsed, "", 1
+
+
+def _generate_matching_greeting(collapsed: str, repeating_char: str, repeat_count: int, name: str = "") -> str:
+    base = "Hello"
+    if collapsed == "hi":
+        base = "Hi"
+    elif collapsed == "hey":
+        base = "Hey"
+    elif collapsed == "yo":
+        base = "Yo"
+    elif collapsed == "hola":
+        base = "Hola"
+    elif collapsed == "howdy":
+        base = "Howdy"
+    elif collapsed in ("hlo", "hlw"):
+        base = "Hello"
+        
+    count = min(repeat_count, 8)
+    
+    if repeating_char and count >= 3:
+        if base == "Hi" and repeating_char == "i":
+            exaggerated = "H" + "i" * count
+        elif base == "Hey" and repeating_char == "y":
+            exaggerated = "He" + "y" * count
+        elif base == "Hello" and repeating_char == "o":
+            exaggerated = "Hell" + "o" * count
+        else:
+            exaggerated = base + repeating_char * (count - 1)
+    else:
+        exaggerated = base
+        
+    if name:
+        return f"{exaggerated} {name}! 👋"
+    return f"{exaggerated}! 👋"
+
+
+def _generate_conversational_reply(cleaned_message: str, user_profile: dict = None) -> str:
+    name = ""
+    if user_profile:
+        name = user_profile.get("FIRSTNAME", "") or user_profile.get("NAME", "") or user_profile.get("USERNAME", "") or user_profile.get("USER_NAME", "")
+        if name:
+            name = name.strip().split()[0].title()
+            
+    greeting = f"Hi {name}! 👋" if name else "Hello! 👋"
+    
+    if any(q in cleaned_message for q in ("how are you", "how is it going", "hows it going", "how do you do")):
+        return (
+            f"{greeting} I'm doing great, thank you for asking! 😊 I am **Adani Procura**, your procurement intelligence copilot. "
+            "I'm fully connected to the SAP HANA database and ready to run query visualizations.\n\n"
+            "How can I assist you with your data analysis today?"
+        )
+        
+    if any(q in cleaned_message for q in ("who are you", "what are you", "your name")):
+        return (
+            f"I am **Adani Procura**, your dedicated enterprise procurement intelligence assistant. 🤖\n\n"
+            "I can run live database queries, analyze suppliers, track quality inspections, and build dashboards "
+            "directly from your SAP environment.\n\n"
+            "What dataset or metric can I pull up for you?"
+        )
+        
+    if any(q in cleaned_message for q in ("whats up", "what up", "wassup")):
+        return (
+            f"{greeting} Not much! Just ready and waiting to crunch some database numbers for you. 📊\n\n"
+            "You can ask me to analyze purchase orders, check vendor defect rates, or show you the Executive Dashboard."
+        )
+        
+    return ""
+
+
+def _generate_greeting_reply(user_message: str, user_profile: dict = None) -> str:
+    cleaned = re.sub(r"[^\w\s]", "", user_message).strip().lower()
+    conv_reply = _generate_conversational_reply(cleaned, user_profile)
+    if conv_reply:
+        return conv_reply
+        
+    name = ""
+    if user_profile:
+        name = user_profile.get("FIRSTNAME", "") or user_profile.get("NAME", "") or user_profile.get("USERNAME", "") or user_profile.get("USER_NAME", "")
+        if name:
+            name = name.strip().split()[0].title()
+            
+    collapsed, rep_char, rep_count = _extract_user_greeting(user_message)
+    greeting = _generate_matching_greeting(collapsed, rep_char, rep_count, name)
+    
+    templates = [
+        f"{greeting} I'm **Adani Procura**, your AI-powered procurement intelligence assistant. "
+        "I'm ready to query your SAP database and visualize the results.\n\n"
+        "Here are a few examples of what you can ask me to do:\n"
+        "* *\"Top 10 vendors by total PO value\"*\n"
+        "* *\"Show me PO status distribution\"*\n"
+        "* *\"How many inspections occurred this month?\"*\n\n"
+        "What data would you like to analyze today?",
+        
+        f"{greeting} Welcome to the Adani Procurement Analytics Portal. "
+        "I can help you monitor spend, analyze vendors, track quality inspections, and build dashboards in real-time.\n\n"
+        "Feel free to ask questions like:\n"
+        "* *\"Give me an overview of all materials\"*\n"
+        "* *\"Show dispatch status summary\"*\n"
+        "* *\"Which suppliers have the most NCR defects?\"*\n\n"
+        "How can I assist you with your queries today?",
+        
+        f"{greeting} I'm **Adani Procura**, your personal procurement-analytics ally. "
+        "I'm connected to the live database and can build charts and dashboards instantly.\n\n"
+        "Try asking me one of these:\n"
+        "* *\"Show me the full data dashboard\"*\n"
+        "* *\"Top suppliers by spend\"*\n"
+        "* *\"PO status breakdown\"*\n\n"
+        "What analytics reports can I pull for you?",
+
+        f"{greeting} Great to connect with you! I am **Adani Procura**, ready to parse and visualize your procurement datasets.\n\n"
+        "What report can I run for you? You can ask me to inspect:\n"
+        "* *\"Inspections pending dispatch approval\"*\n"
+        "* *\"NCR counts grouped by vendor name\"*\n"
+        "* *\"Active PO values for this quarter\"*\n\n"
+        "Let's get started!",
+
+        f"{greeting} Glad you stopped by! I'm **Adani Procura**, your procurement copilot. "
+        "I can build custom bar charts, pie charts, and data tables on the fly.\n\n"
+        "Would you like to search vendor metrics, check dispatch progress, or inspect POs today?",
+
+        f"{greeting} Hello! I am **Adani Procura**, your assistant for all things procurement. "
+        "How can I help you extract insights from the SAP HANA database today?",
+
+        f"{greeting} **System online and ready!** 🚀 I'm your dedicated procurement assistant. "
+        "I can analyze purchase orders, material dispatches, and quality inspections in seconds.\n\n"
+        "Try saying: *\"Show me vendor performance\"* or *\"Chart monthly order values\"*.",
+
+        f"{greeting} Connection to the SAP HANA database is healthy and ready to fetch insights! ⚡ "
+        "I can build real-time visual reports of your procurement pipeline.\n\n"
+        "Would you like me to load the Executive Dashboard or query a specific table?",
+
+        f"{greeting} Procura system initialized. 📊 Let's turn your raw database tables into beautiful charts and insights.\n\n"
+        "What area are we focusing on today? Purchase Orders, Suppliers, Materials, or Inspections?",
+
+        f"{greeting} Welcome! I make navigating complex procurement tables easy. "
+        "Just ask me your question in plain English, and I'll handle the SQL and visualization.\n\n"
+        "What analysis shall we run first?",
+
+        f"{greeting} Nice to meet you! I'm **Adani Procura**. I specialize in real-time supply chain analytics and spend monitoring.\n\n"
+        "Ask me to *\"show the summary dashboard\"* to get a high-level view, or query a specific metric!",
+
+        f"{greeting} How's it going? I'm your procurement intelligence copilot. "
+        "I can check dispatch logs, identify top suppliers, and audit inspection results.\n\n"
+        "What data can I retrieve for you right now?"
+    ]
+    
+    return random.choice(templates)
+
+
 def create_app() -> Flask:
     app = Flask(__name__)
     cfg = Config()
@@ -280,6 +507,15 @@ def create_app() -> Flask:
             user_message = user_message[: cfg.MAX_INPUT_CHARS]
 
         cid = _conversation_id()
+        user_profile = session.get("user_profile")
+
+        # Intercept simple greetings to reply immediately and save cost/latency
+        if _detect_greeting(user_message):
+            reply = _generate_greeting_reply(user_message, user_profile)
+            memory.append(cid, "user", user_message)
+            memory.append(cid, "assistant", reply)
+            return jsonify({"type": "greeting", "reply": reply})
+
         history = memory.get(cid)
 
         # Load the live schema (cached after first call).
