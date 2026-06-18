@@ -1,142 +1,184 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <title>Procura — Procurement Analytics</title>
-  <meta name="description" content="Procura — AI-powered procurement analytics assistant. Analyze purchase orders, vendors, inspections, dispatches, and more with natural language." />
+  <title>Adani Procura — Procurement Analytics Portal</title>
+  <meta name="description" content="Adani Procura — AI-powered procurement analytics assistant. Analyze purchase orders, vendors, inspections, dispatches, and more." />
+  
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              200: '#bae0fd',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+              950: '#090e18'
+            }
+          },
+          keyframes: {
+            fadeInUp: {
+              '0%': { opacity: '0', transform: 'translateY(12px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            }
+          },
+          animation: {
+            fadeInUp: 'fadeInUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both',
+            fadeIn: 'fadeIn 0.25s ease both',
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body>
+<body class="h-full bg-slate-50 text-slate-900 font-sans antialiased overflow-hidden">
+
   <div class="app" id="app">
 
-    <!-- ─── Sidebar ─── -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="brand">
-          <div class="logo-icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- ─── Sidebar (Dark Slate Corporate Sidebar) ─── -->
+    <aside class="sidebar fixed inset-y-0 left-0 z-50 flex flex-col w-64 bg-slate-950 border-r border-slate-900 text-slate-400 p-4 transition-transform duration-300 lg:translate-x-0 lg:static lg:h-full -translate-x-full" id="sidebar">
+      
+      <!-- Brand Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-slate-900 mb-4">
+        <div class="flex items-center gap-3">
+          <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-tr from-brand-600 to-cyan-500 text-white shadow-lg shadow-brand-500/20" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 2L2 7l10 5 10-5-10-5z"/>
               <path d="M2 17l10 5 10-5"/>
               <path d="M2 12l10 5 10-5"/>
             </svg>
           </div>
-          <div class="brand-text">
-            <strong>Procura</strong>
-            <span class="brand-tag">AI Analytics</span>
+          <div class="flex flex-col leading-tight">
+            <strong class="text-white text-base font-bold tracking-tight">Adani Procura</strong>
+            <span class="text-[10px] text-slate-500 font-semibold uppercase tracking-widest">Adani Group</span>
           </div>
         </div>
-        <button id="sidebar-toggle" class="icon-btn sidebar-collapse-btn" type="button" aria-label="Toggle sidebar" title="Toggle sidebar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button id="sidebar-toggle" class="lg:flex hidden items-center justify-center w-8 h-8 rounded-md hover:bg-slate-900 hover:text-white transition-colors" type="button" aria-label="Collapse sidebar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="18" height="18" rx="2"/>
             <path d="M9 3v18"/>
           </svg>
         </button>
       </div>
 
-      <button id="new-chat-btn" class="new-chat-btn" type="button">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <!-- New Chat trigger -->
+      <button id="new-chat-btn" class="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl border border-dashed border-slate-800 text-slate-300 font-medium text-sm hover:border-brand-500 hover:bg-brand-50/10 hover:text-white transition-all duration-200" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 5v14M5 12h14"/>
         </svg>
         New Chat
       </button>
 
-      <nav class="sidebar-nav">
-        <div class="nav-section-label">Quick Actions</div>
-        <button class="nav-item" data-action="dashboard" id="dashboard-btn" type="button">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Navigation links -->
+      <nav class="flex-1 overflow-y-auto space-y-1 mt-6">
+        <div class="text-[10px] uppercase font-bold tracking-wider text-slate-600 px-3 pb-2">Quick Actions</div>
+        <button class="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-semibold hover:bg-slate-900 hover:text-white transition-all text-slate-400" data-action="dashboard" id="dashboard-btn" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
             <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
           </svg>
-          Dashboard
+          Executive Dashboard
         </button>
       </nav>
 
-      <div class="sidebar-footer">
-        <div class="user-profile-card hidden" id="user-profile-card">
-          <div class="user-avatar" id="user-avatar">U</div>
-          <div class="user-info">
-            <span class="user-name" id="user-name"></span>
-            <span class="user-role" id="user-role"></span>
+      <!-- User Profile & Status Footer -->
+      <div class="pt-4 border-t border-slate-900 mt-auto space-y-3">
+        <div class="hidden flex items-center gap-3 p-2 rounded-lg bg-slate-900/50 border border-slate-900" id="user-profile-card">
+          <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-tr from-brand-800 to-brand-600 text-white font-bold text-base shadow" id="user-avatar">U</div>
+          <div class="flex flex-col min-w-0 flex-1">
+            <span class="text-sm font-semibold text-slate-200 truncate" id="user-name"></span>
+            <span class="text-xs text-slate-500 truncate" id="user-role"></span>
           </div>
         </div>
-        <div class="status-badge" id="status-badge">
-          <span class="status-dot" id="status-dot"></span>
-          <span class="status-text" id="status-text">Checking…</span>
+        <div class="flex items-center gap-2.5 px-2 text-xs font-medium text-slate-500" id="status-badge">
+          <span class="w-2 h-2 rounded-full bg-slate-600" id="status-dot"></span>
+          <span id="status-text">Checking connection…</span>
         </div>
       </div>
     </aside>
 
-    <!-- ─── Mobile topbar ─── -->
-    <header class="mobile-topbar" id="mobile-topbar">
-      <button id="mobile-sidebar-btn" class="icon-btn" type="button" aria-label="Open menu">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- ─── Mobile topbar (Sticky mobile header) ─── -->
+    <header class="mobile-topbar flex lg:hidden items-center justify-between px-4 h-14 bg-white border-b border-slate-200 w-full" id="mobile-topbar">
+      <button id="mobile-sidebar-btn" class="flex items-center justify-center w-9 h-9 rounded-md hover:bg-slate-100 text-slate-600" type="button" aria-label="Open menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 12h18M3 6h18M3 18h18"/>
         </svg>
       </button>
-      <div class="mobile-brand">
-        <div class="logo-icon small" aria-hidden="true">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <div class="flex items-center gap-2">
+        <div class="flex items-center justify-center w-7 h-7 rounded bg-brand-600 text-white shadow" aria-hidden="true">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
           </svg>
         </div>
-        <strong>Procura</strong>
+        <strong class="text-slate-900 text-sm font-bold tracking-tight">Adani Procura</strong>
       </div>
-      <button id="mobile-new-chat-btn" class="icon-btn" type="button" aria-label="New chat">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <button id="mobile-new-chat-btn" class="flex items-center justify-center w-9 h-9 rounded-md hover:bg-slate-100 text-slate-600" type="button" aria-label="New chat">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 5v14M5 12h14"/>
         </svg>
       </button>
     </header>
 
-    <!-- ─── Main chat area ─── -->
+    <!-- ─── Main Chat Panel (Flex column taking up left side) ─── -->
     <div class="chat-area">
-      <main id="messages" class="messages" aria-live="polite">
+      <main id="messages" class="messages flex-1 overflow-y-auto px-4 py-8 lg:px-6 space-y-4">
 
-        <!-- Welcome screen -->
-        <div class="welcome-screen" id="welcome-screen">
-          <div class="welcome-icon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="url(#welcome-grad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <defs>
-                <linearGradient id="welcome-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#3ecf8e"/>
-                  <stop offset="100%" stop-color="#2aa9c9"/>
-                </linearGradient>
-              </defs>
+        <!-- Welcome layout -->
+        <div class="flex flex-col items-center justify-center text-center max-w-lg mx-auto py-12 px-4 animate-fadeInUp" id="welcome-screen">
+          <div class="flex items-center justify-center w-16 h-16 rounded-2xl bg-white border border-slate-200 shadow-md shadow-brand-500/5 mb-6 text-brand-600 animate-bounce">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M12 2L2 7l10 5 10-5-10-5z"/>
               <path d="M2 17l10 5 10-5"/>
               <path d="M2 12l10 5 10-5"/>
             </svg>
           </div>
-          <h1 class="welcome-title">How can I help you today?</h1>
-          <p class="welcome-subtitle">I'm Procura, your procurement analytics assistant. Ask me anything about your data.</p>
-          <div class="suggestion-chips" id="suggestion-chips">
-            <button class="chip" data-prompt="Top 10 vendors by total PO value" type="button">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          <h1 class="text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Adani Procurement Analytics</h1>
+          <p class="text-sm text-slate-500 leading-relaxed mb-8">I'm Adani Procura, your procurement intelligence assistant. Ask me anything about purchase orders, vendors, status, dispatches, and disconformities.</p>
+          
+          <div class="flex flex-wrap justify-center gap-2 max-w-xl" id="suggestion-chips">
+            <button class="chip group flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border border-slate-200 text-xs font-semibold text-slate-600 shadow-sm hover:border-brand-500 hover:text-brand-600 hover:bg-brand-50/50 transition-all duration-200" data-prompt="Top 10 vendors by total PO value" type="button">
+              <svg class="text-slate-400 group-hover:text-brand-500 transition-colors" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
               Top 10 vendors by spend
             </button>
-            <button class="chip" data-prompt="Show me PO status distribution" type="button">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+            <button class="chip group flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border border-slate-200 text-xs font-semibold text-slate-600 shadow-sm hover:border-brand-500 hover:text-brand-600 hover:bg-brand-50/50 transition-all duration-200" data-prompt="Show me PO status distribution" type="button">
+              <svg class="text-slate-400 group-hover:text-brand-500 transition-colors" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
               PO status breakdown
             </button>
-            <button class="chip" data-prompt="Give me an overview of all materials" type="button">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+            <button class="chip group flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border border-slate-200 text-xs font-semibold text-slate-600 shadow-sm hover:border-brand-500 hover:text-brand-600 hover:bg-brand-50/50 transition-all duration-200" data-prompt="Give me an overview of all materials" type="button">
+              <svg class="text-slate-400 group-hover:text-brand-500 transition-colors" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
               Materials overview
             </button>
-            <button class="chip" data-prompt="How many inspections happened this month?" type="button">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <button class="chip group flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border border-slate-200 text-xs font-semibold text-slate-600 shadow-sm hover:border-brand-500 hover:text-brand-600 hover:bg-brand-50/50 transition-all duration-200" data-prompt="How many inspections happened this month?" type="button">
+              <svg class="text-slate-400 group-hover:text-brand-500 transition-colors" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
               Recent inspections
             </button>
-            <button class="chip" data-prompt="Show dispatch status summary" type="button">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5a2 2 0 0 1-2 2h-1"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <button class="chip group flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border border-slate-200 text-xs font-semibold text-slate-600 shadow-sm hover:border-brand-500 hover:text-brand-600 hover:bg-brand-50/50 transition-all duration-200" data-prompt="Show dispatch status summary" type="button">
+              <svg class="text-slate-400 group-hover:text-brand-500 transition-colors" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5a2 2 0 0 1-2 2h-1"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
               Dispatch summary
             </button>
-            <button class="chip" data-prompt="Show me the full data dashboard" type="button">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            <button class="chip group flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border border-slate-200 text-xs font-semibold text-slate-600 shadow-sm hover:border-brand-500 hover:text-brand-600 hover:bg-brand-50/50 transition-all duration-200" data-prompt="Show me the full data dashboard" type="button">
+              <svg class="text-slate-400 group-hover:text-brand-500 transition-colors" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
               Full dashboard
             </button>
           </div>
@@ -144,80 +186,124 @@
 
       </main>
 
-      <!-- ─── Composer ─── -->
-      <div class="composer-area">
-        <form id="composer" class="composer" autocomplete="off">
-          <div class="input-wrap">
-            <textarea id="input" rows="1" placeholder="Ask about POs, vendors, inspections, dispatches, payments…" aria-label="Message Procura"></textarea>
-            <button id="send-btn" type="submit" aria-label="Send message" title="Send message">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <!-- ─── Composer (Chat Input Area) ─── -->
+      <div class="px-4 pb-6 bg-slate-50 relative">
+        <!-- Fade overlay for top of composer -->
+        <div class="absolute -top-10 left-0 right-0 h-10 bg-gradient-to-t from-slate-50 to-transparent pointer-events-none"></div>
+        
+        <form id="composer" class="max-w-3xl mx-auto" autocomplete="off">
+          <div class="flex items-end bg-white border border-slate-200 rounded-2xl shadow-sm focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/10 overflow-hidden transition-all duration-150">
+            <textarea id="input" rows="1" placeholder="Ask about POs, vendors, inspections, dispatches, payments…" class="flex-1 resize-none max-h-40 py-3 px-4 bg-transparent text-slate-800 text-sm outline-none placeholder-slate-400 leading-relaxed" aria-label="Message Procura"></textarea>
+            <button id="send-btn" type="submit" class="flex items-center justify-center w-9 h-9 m-2 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-700 text-white shadow-md shadow-brand-500/20 hover:scale-105 active:scale-95 disabled:opacity-40 disabled:scale-100 disabled:shadow-none transition-all duration-150" aria-label="Send message" title="Send message">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M22 2L11 13"/>
                 <path d="M22 2L15 22l-4-9-9-4z"/>
               </svg>
             </button>
           </div>
-          <p class="composer-hint">Procura can analyze your procurement data and generate charts. Press Enter to send.</p>
+          <p class="text-[10px] text-slate-400 text-center mt-2 font-medium">Procura can analyze your procurement database. Press Enter to send, Shift+Enter for newline.</p>
         </form>
       </div>
     </div>
 
-    <!-- ─── Dashboard overlay ─── -->
-    <div id="dashboard-panel" class="dashboard-panel hidden" aria-hidden="true">
-      <div class="dashboard-container">
-        <div class="dashboard-panel-header">
-          <div class="dashboard-header-left">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-              <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-            </svg>
-            <strong>Data Overview</strong>
+    <!-- ─── Visualization Panel (Split Workbench) ─── -->
+    <div id="viz-panel" class="viz-panel" aria-hidden="true">
+      <div class="viz-container">
+        
+        <!-- Panel Tab Header -->
+        <div class="viz-panel-header">
+          <div class="viz-tabs">
+            <button id="tab-dashboard" class="viz-tab active" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+              Executive Dashboard
+            </button>
+            <button id="tab-explorer" class="viz-tab" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
+                <path d="M22 12A10 10 0 0 0 12 2v10z"/>
+              </svg>
+              Query Explorer
+            </button>
           </div>
-          <button id="dashboard-close-btn" class="icon-btn" type="button" aria-label="Close dashboard">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 6L6 18M6 6l12 12"/>
-            </svg>
-          </button>
+          
+          <div class="flex items-center gap-2">
+            <button id="dashboard-export-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 active:scale-95 transition-all duration-150 cursor-pointer" type="button" title="Print Executive PDF Report">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Export PDF Report
+            </button>
+            <button id="viz-close-btn" class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors" type="button" aria-label="Close panel" title="Close panel">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
         </div>
-        <div id="dashboard-body" class="dashboard-body"></div>
+        
+        <!-- Panel Body -->
+        <div class="viz-body">
+          <!-- Dashboard Content -->
+          <div id="panel-dashboard-content" class="tab-content">
+            <div id="dashboard-body" class="dashboard-body"></div>
+          </div>
+          
+          <!-- Query Explorer Content -->
+          <div id="panel-explorer-content" class="tab-content hidden">
+            <div id="explorer-body" class="explorer-body">
+              <div class="explorer-placeholder">
+                <div class="explorer-placeholder-icon">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+                  </svg>
+                </div>
+                <h3>Query Visualization Workbench</h3>
+                <p>Ask a question about your procurement data in the chat. Charts, graphs, and full tables will display here at full resolution.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
       </div>
     </div>
 
     <!-- ─── Sidebar overlay for mobile ─── -->
-    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <div class="sidebar-overlay fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 hidden" id="sidebar-overlay"></div>
 
     <!-- ─── Login / Identity Screen ─── -->
-    <div class="login-overlay" id="login-overlay">
-      <div class="login-card">
-        <div class="login-icon">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="url(#login-grad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <defs>
-              <linearGradient id="login-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#3ecf8e"/>
-                <stop offset="100%" stop-color="#2aa9c9"/>
-              </linearGradient>
-            </defs>
+    <div class="login-overlay fixed inset-0 z-[100] bg-slate-50 flex items-center justify-center p-4 animate-fadeIn" id="login-overlay">
+      <div class="w-full max-w-md bg-white border border-slate-200 rounded-3xl p-8 text-center shadow-xl shadow-slate-100/50 animate-fadeInUp">
+        <div class="flex items-center justify-center w-14 h-14 mx-auto mb-6 rounded-2xl bg-brand-50 border border-brand-100 text-brand-600 shadow shadow-brand-500/5">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M12 2L2 7l10 5 10-5-10-5z"/>
             <path d="M2 17l10 5 10-5"/>
             <path d="M2 12l10 5 10-5"/>
           </svg>
         </div>
-        <h2 class="login-title">Welcome to Procura</h2>
-        <p class="login-subtitle">Enter your User ID to get started</p>
-        <form id="login-form" class="login-form" autocomplete="off">
-          <div class="login-input-wrap">
-            <svg class="login-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight mb-2">Adani Procurement Analytics</h2>
+        <p class="text-sm text-slate-500 mb-8 leading-relaxed">Enter your User ID to log into the portal</p>
+        
+        <form id="login-form" class="space-y-4" autocomplete="off">
+          <div class="relative flex items-center">
+            <svg class="absolute left-4 text-slate-400" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
               <circle cx="12" cy="7" r="4"/>
             </svg>
-            <input type="text" id="login-userid" placeholder="Enter your User ID" required autocomplete="off" />
+            <input type="text" id="login-userid" placeholder="Enter your User ID" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm placeholder-slate-400 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all duration-150" autocomplete="off" />
           </div>
-          <button type="submit" class="login-btn" id="login-btn">
+          
+          <button type="submit" class="relative flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-700 text-white text-sm font-semibold shadow-lg shadow-brand-500/20 hover:scale-[1.01] hover:shadow-brand-500/30 active:scale-100 transition-all duration-150" id="login-btn">
             <span class="login-btn-text">Continue</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
           </button>
-          <p class="login-error hidden" id="login-error"></p>
+          <p class="text-xs text-red-600 text-left pt-1 hidden" id="login-error"></p>
         </form>
       </div>
     </div>
@@ -227,4 +313,3 @@
   <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>
-

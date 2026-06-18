@@ -166,3 +166,51 @@ TABLE_BUSINESS_CONTEXT = {
         "connected_tables": ["PurchaseOrderSet"],
     },
 }
+
+
+# Common business words/synonyms users type for each table, used as a
+# safety-net lookup when the planner's chosen table name does not exactly
+# match the live schema (wrong case, missing ZHANADB_ prefix, a name copied
+# from the descriptive "connected_tables" hints, etc.). Keyed by the exact,
+# case-sensitive table name; values are lowercase synonyms.
+TABLE_ALIASES = {
+    "ZHANADB_PURCHASEORDERSET": [
+        "po", "pos", "purchase order", "purchase orders", "order", "orders",
+        "vendor", "vendors", "supplier", "suppliers",
+    ],
+    "ZHANADB_MATERIALSET": [
+        "material", "materials", "item", "items", "product", "products",
+        "commodity", "commodities", "goods",
+    ],
+    "ZHANADB_MATERIALFAMILYSET": [
+        "material family", "material families", "material category",
+        "material categories", "subfamily",
+    ],
+    "ZHANADB_INSPECTIONSET": [
+        "inspection", "inspections", "qa", "quality check", "qc",
+    ],
+    "ZHANADB_INSPECTIONITEMSET": [
+        "inspection item", "inspection items",
+    ],
+    "ZHANADB_NCRDCRDATASET": [
+        "ncr", "dcr", "ncr/dcr", "non-conformance", "non conformance",
+        "rejection", "rejections", "defect", "defects",
+    ],
+    "ZHANADB_NCRDCRITEMDATASET": ["ncr item", "dcr item"],
+    "ZHANADB_QUERYLISTSET": [
+        "query", "queries", "vendor query", "vendor queries",
+    ],
+    "ZHANADB_SERVICEORDERSET": [
+        "service order", "service orders",
+    ],
+    "ZHANADB_CHANGENOTESET": [
+        "change note", "change notes", "change request", "change requests",
+    ],
+    "ZHANADB_DOCUMENTSET": ["document", "documents", "attachment", "attachments"],
+    "ZHANADB_COMMENTSET": ["comment", "comments", "remark", "remarks"],
+    "ZHANADB_WBS": ["wbs", "work breakdown", "work breakdown structure"],
+    "ZHANADB_PROJECTWBSSET": ["project wbs", "project", "projects"],
+    "ZHANADB_POBGRELATIONSET": ["bank guarantee", "bank guarantees", "bg"],
+    "ZHANADB_POASSIGNMENTSET": ["assignment", "assignments", "po assignment"],
+    "ZHANADB_USERROLESET": ["role", "roles", "user role", "user roles"],
+}

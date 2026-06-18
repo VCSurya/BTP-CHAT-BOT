@@ -58,9 +58,11 @@ class Config:
     SHOW_SQL = _as_bool(os.environ.get("SHOW_SQL"), True)
 
     # --- Dashboard (schema-driven overview, no LLM involved) ---
-    DASHBOARD_MAX_TABLES = _as_int(os.environ.get("DASHBOARD_MAX_TABLES"), 6)
-    DASHBOARD_MAX_COLUMNS = _as_int(os.environ.get("DASHBOARD_MAX_COLUMNS"), 2)
-    DASHBOARD_TOP_N = _as_int(os.environ.get("DASHBOARD_TOP_N"), 8)
+    # High enough to cover every business area in the schema, so "show me
+    # the dashboard" surfaces all of them, not just a handful.
+    DASHBOARD_MAX_TABLES = _as_int(os.environ.get("DASHBOARD_MAX_TABLES"), 40)
+    DASHBOARD_MAX_COLUMNS = _as_int(os.environ.get("DASHBOARD_MAX_COLUMNS"), 3)
+    DASHBOARD_TOP_N = _as_int(os.environ.get("DASHBOARD_TOP_N"), 10)
 
     @classmethod
     def validate(cls):

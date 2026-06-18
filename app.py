@@ -14,14 +14,23 @@ exposed to the client.
 """
 import logging
 import os
+import re
 import uuid
 
 from flask import Flask, jsonify, render_template, request, session
 
 from config import Config
 from prompts.system_prompts import analyst_system, planner_system
+from prompts.table_knowledge import TABLE_ALIASES
 from services.chart_service import build_chart
-from services.dashboard_service import DashboardError, build_dashboard, build_table_overview
+from services.dashboard_service import (
+    DashboardError,
+    build_dashboard,
+    build_dashboard_sections,
+    build_table_overview,
+    friendly_name,
+    group_sections,
+)
 from services.hana_service import HanaService
 from services.llm_service import LLMError, LLMService
 from services.memory import ConversationMemory
@@ -64,6 +73,97 @@ def _build_recent_context(last_query: dict) -> str:
         "original columns unless the user asks to drop them. If the new message asks "
         "to see this same data in a different chart, use the 'rechart' intent."
     )
+
+
+def _normalize_table_token(name: str) -> str:
+    """Strip the ZHANADB_ prefix, a trailing SET, and non-alnum noise so
+    near-miss table names (wrong case, missing prefix, plural mismatch)
+    still compare equal."""
+    token = re.sub(r"[^A-Za-z0-9]", "", (name or "")).upper()
+    if token.startswith("ZHANADB"):
+        token = token[len("ZHANADB"):]
+    if token.endswith("SET"):
+        token = token[: -len("SET")]
+    return token
+
+
+def _resolve_table_name(name: str, tables: dict) -> str | None:
+    """Match a (possibly imperfect) table name from the LLM against the real,
+    live schema. Tries an exact match first, then a normalized match (case,
+    missing prefix/suffix), then known business-word aliases. Returns the
+    real table name, or None if nothing reasonable matches."""
+    if not name:
+        return None
+    name = name.strip()
+    if name in tables:
+        return name
+
+    upper = name.upper()
+    for real in tables:
+        if real.upper() == upper:
+            return real
+
+    target = _normalize_table_token(name)
+    if target:
+        for real in tables:
+            if _normalize_table_token(real) == target:
+                return real
+
+    lowered = name.lower()
+    for real, synonyms in TABLE_ALIASES.items():
+        if real in tables and any(
+            lowered == syn or lowered in syn or syn in lowered for syn in synonyms
+        ):
+            return real
+
+    return None
+
+
+_TABLE_REF_RE = re.compile(r'"(ZHANADB_[A-Za-z0-9_]+)"')
+
+
+def _unknown_tables_in_sql(sql: str, tables: dict) -> list:
+    """Return any ZHANADB_* identifiers referenced in the generated SQL that
+    do not exist in the live schema -- a sign the model hallucinated a table
+    name rather than copying one from the real schema."""
+    known_upper = {t.upper() for t in tables}
+    seen = []
+    for ref in _TABLE_REF_RE.findall(sql or ""):
+        if ref.upper() not in known_upper and ref not in seen:
+            seen.append(ref)
+    return seen
+
+
+def _available_areas_text(tables: dict, search_term: str = None) -> str:
+    from services.dashboard_service import friendly_name
+    if search_term:
+        term = search_term.strip().lower().rstrip('s')
+        matches = []
+        for t in tables:
+            f_name = friendly_name(t)
+            if term in f_name.lower() or term in t.lower():
+                matches.append(f_name)
+        if matches:
+            return ", ".join(matches[:5])
+
+    # Curated key business domains
+    curated = [
+        "ZHANADB_PURCHASEORDERSET",
+        "ZHANADB_INSPECTIONSET",
+        "ZHANADB_SERVICEORDERSET",
+        "ZHANADB_CHANGENOTESET",
+        "ZHANADB_QUERYLISTSET",
+        "ZHANADB_NCRDCRDATASET",
+        "ZHANADB_MATERIALSET",
+        "ZHANADB_PROJECTWBSSET",
+    ]
+    names = []
+    for t in curated:
+        if t in tables:
+            names.append(friendly_name(t))
+    if not names:
+        names = [friendly_name(t) for t in list(tables.keys())[:6]]
+    return ", ".join(names[:6])
 
 
 def create_app() -> Flask:
@@ -155,6 +255,7 @@ def create_app() -> Flask:
         try:
             data = build_dashboard(
                 hana,
+                llm_service=llm,
                 max_tables=cfg.DASHBOARD_MAX_TABLES,
                 max_cols_per_table=cfg.DASHBOARD_MAX_COLUMNS,
                 top_n=cfg.DASHBOARD_TOP_N,
@@ -230,26 +331,75 @@ def create_app() -> Flask:
             try:
                 if table_name:
                     meta = hana.introspect_schema()
-                    if table_name not in meta["tables"]:
-                        reply = (
-                            "I couldn't find that in the data I have. Could you "
-                            "tell me which area you'd like an overview of?"
-                        )
+                    resolved_table = _resolve_table_name(table_name, meta["tables"])
+                    if resolved_table is None:
+                        options = _available_areas_text(meta["tables"], search_term=table_name)
+                        if options:
+                            reply = (
+                                f"I couldn't find a direct match for '{table_name}' in the data. "
+                                f"Did you mean one of these: {options}?"
+                            )
+                        else:
+                            reply = (
+                                f"I couldn't find '{table_name}' in the data. I can show you overviews for "
+                                "Purchase Orders, Quality Inspections, Service Orders, Change Notes, or Materials — "
+                                "which would you like?"
+                            )
                         memory.append(cid, "assistant", reply)
                         return jsonify({"type": "clarify", "reply": reply})
+                    table_name = resolved_table
                     overview = build_table_overview(
                         hana, table_name,
                         max_cols=cfg.DASHBOARD_MAX_COLUMNS, top_n=cfg.DASHBOARD_TOP_N,
                     )
-                    sections = [overview]
+                    flat_sections = [overview] if overview.get("charts") else []
+
+                    if not flat_sections:
+                        reply = "There isn't enough data there yet to build an overview."
+                        memory.append(cid, "assistant", reply)
+                        return jsonify({"type": "info", "reply": reply})
+
+                    grouped = group_sections(flat_sections)
+                    summary = grouped["summary"]
+                    reply = f"Here's an overview of {flat_sections[0]['name']} — {summary['total_records']:,} records in total."
+                    memory.append(cid, "assistant", reply)
+                    return jsonify(
+                        {
+                            "type": "dashboard",
+                            "reply": reply,
+                            "summary": summary,
+                            "categories": grouped["categories"],
+                        }
+                    )
                 else:
                     full = build_dashboard(
                         hana,
+                        llm_service=llm,
                         max_tables=cfg.DASHBOARD_MAX_TABLES,
                         max_cols_per_table=cfg.DASHBOARD_MAX_COLUMNS,
                         top_n=cfg.DASHBOARD_TOP_N,
                     )
-                    sections = full["sections"]
+                    categories = full.get("categories") or []
+                    if not categories:
+                        reply = "There isn't enough data there yet to build a dashboard."
+                        memory.append(cid, "assistant", reply)
+                        return jsonify({"type": "info", "reply": reply})
+
+                    summary = full.get("summary") or {}
+                    reply = f"Here's an overview of the business — {summary.get('total_records', 0):,} records across {summary.get('business_areas', 0)} areas."
+                    memory.append(cid, "assistant", reply)
+
+                    response_payload = {
+                        "type": "dashboard",
+                        "reply": reply,
+                        "summary": summary,
+                        "categories": categories,
+                    }
+                    if "business_summary" in full:
+                        response_payload["business_summary"] = full["business_summary"]
+                    if "ai_insights" in full:
+                        response_payload["ai_insights"] = full["ai_insights"]
+                    return jsonify(response_payload)
             except DashboardError as error:
                 reply = str(error)
                 memory.append(cid, "assistant", reply)
@@ -259,21 +409,6 @@ def create_app() -> Flask:
                 reply = "I wasn't able to put that overview together just now. Could you try again in a moment?"
                 memory.append(cid, "assistant", reply)
                 return jsonify({"type": "error", "reply": reply})
-
-            sections = [s for s in sections if s.get("charts")]
-            if not sections:
-                reply = "There isn't enough data there yet to build an overview."
-                memory.append(cid, "assistant", reply)
-                return jsonify({"type": "info", "reply": reply})
-
-            total = sum(s.get("total_records", 0) for s in sections)
-            reply = (
-                f"Here's an overview of {table_name.lower()} — {total:,} records in total."
-                if table_name
-                else f"Here's an overview of the data — {total:,} records across {len(sections)} areas."
-            )
-            memory.append(cid, "assistant", reply)
-            return jsonify({"type": "dashboard", "reply": reply, "sections": sections})
 
         if intent == "rechart":
             last = memory.get_last_query(cid)
@@ -348,6 +483,25 @@ def create_app() -> Flask:
             )
             memory.append(cid, "assistant", reply)
             return jsonify({"type": "error", "reply": reply})
+
+        try:
+            meta = hana.introspect_schema()
+            unknown_tables = _unknown_tables_in_sql(safe_sql, meta["tables"])
+        except Exception:  # noqa: BLE001
+            unknown_tables = []
+        if unknown_tables:
+            log.warning(
+                "Generated SQL referenced unknown table(s) %s: %s",
+                unknown_tables, safe_sql,
+            )
+            options = _available_areas_text(meta["tables"])
+            reply = (
+                "I don't have information on that specific area, but I can help with "
+                f"things like {options}, and more — could you tell me a bit more about "
+                "what you're looking for?"
+            )
+            memory.append(cid, "assistant", reply)
+            return jsonify({"type": "clarify", "reply": reply})
 
         try:
             result = hana.execute_query(safe_sql, max_rows=cfg.MAX_RESULT_ROWS)

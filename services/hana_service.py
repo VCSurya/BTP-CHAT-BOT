@@ -122,9 +122,33 @@ class HanaService:
             self._release(conn)
 
     # --- query execution --------------------------------------------------
+    def qualify_sql(self, sql: str) -> str:
+        """Automatically qualify un-qualified ZHANADB_* tables with the current schema."""
+        if not sql:
+            return sql
+        schema = self.cfg.HANA_SCHEMA
+        if not schema:
+            try:
+                with self._connection() as conn:
+                    cursor = conn.cursor()
+                    try:
+                        cursor.execute("SELECT CURRENT_SCHEMA FROM DUMMY")
+                        row = cursor.fetchone()
+                        if row:
+                            schema = row[0]
+                    finally:
+                        cursor.close()
+            except Exception:
+                pass
+        if not schema:
+            schema = "CURRENT_SCHEMA"
+        import re
+        return re.sub(r'(?<!\.)"ZHANADB_([A-Za-z0-9_]+)"', f'"{schema}"."ZHANADB_\\1"', sql)
+
     def execute_query(self, sql: str, max_rows: int = None) -> dict:
         """Run a read-only query and return {columns, rows, truncated}.
         Retries once on a transient connection error."""
+        sql = self.qualify_sql(sql)
         max_rows = max_rows or self.cfg.MAX_RESULT_ROWS
         last_error = None
         for attempt in range(2):
@@ -198,7 +222,7 @@ class HanaService:
                             break
                     if id_column is None:
                         # Fall back to the first column if none of the common names match.
-                        id_column = columns[0]
+                        id_column = columns[5]
 
                     sql = (
                         f'SELECT {col_list} FROM "{schema}"."ZHANADB_USERSET" '
@@ -299,8 +323,12 @@ class HanaService:
                     """,
                     (schema,),
                 )
+                from prompts.table_knowledge import TABLE_BUSINESS_CONTEXT
                 for vname, cname, dtype, nullable in cursor.fetchall():
                     if vname in RESTRICTED_TABLES:
+                        continue
+                    # Only keep views starting with ZHANADB_ or explicitly mapped in glossary
+                    if not vname.upper().startswith("ZHANADB_") and vname not in TABLE_BUSINESS_CONTEXT:
                         continue
                     tables.setdefault(vname, {"kind": "view", "columns": []})
                     tables[vname]["columns"].append(
@@ -395,6 +423,7 @@ class HanaService:
         """
         meta = self.introspect_schema(refresh=refresh)
         schema = meta["schema"]
+        table_names = list(meta["tables"].keys())
         lines = [
             f'Database schema (HANA schema name: "{schema}").',
             "Reference every object as \"SCHEMA\".\"TABLE\".\"COLUMN\" using these "
@@ -402,6 +431,15 @@ class HanaService:
             "Lines beginning with \"e.g.\" are REAL sample rows from that table — "
             "use them to understand what each table actually holds. Only the "
             "columns listed exist; there are no other columns.",
+            "",
+            "EXACT TABLE/VIEW NAMES (the complete, authoritative list — this schema "
+            "has no other objects). Whenever a field requires a table name "
+            "(overview_table, or any table in SQL), you MUST copy one of these "
+            "strings EXACTLY, character-for-character, including the ZHANADB_ "
+            "prefix and the exact casing. NEVER use a name mentioned in a "
+            "\"Purpose\" or \"Connected Tables\" note below — those are plain-English "
+            "business descriptions, not real identifiers, and copying them WILL fail:",
+            ", ".join(table_names),
             "",
         ]
         for name, info in meta["tables"].items():
@@ -414,7 +452,10 @@ class HanaService:
             if context:
                 lines.append(f'    Purpose: {context["purpose"]}')
                 if context.get("connected_tables"):
-                    lines.append(f'    Connected Tables: {", ".join(context["connected_tables"])}')
+                    lines.append(
+                        "    Connected Tables (business names, NOT real identifiers — "
+                        f'never use these literally): {", ".join(context["connected_tables"])}'
+                    )
                 if context.get("importance"):
                     lines.append(f'    Importance: {context["importance"]}')
             for row in info.get("sample") or []:

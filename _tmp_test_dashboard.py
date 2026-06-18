@@ -33,12 +33,12 @@ class FakeHana:
 
 hana = FakeHana()
 overview = build_table_overview(hana, "MATERIALS", max_cols=2, top_n=8)
-print("total_records:", overview["total_records"])
+print("name:", overview["name"], "total_records:", overview["total_records"])
 for c in overview["charts"]:
     print(" chart:", c["title"], c["labels"], c["datasets"])
 
 full = build_dashboard(hana, max_tables=6, max_cols_per_table=2, top_n=8)
-print("sections:", len(full["sections"]))
+print("categories:", len(full["categories"]), "summary:", full["summary"])
 
 try:
     build_table_overview(hana, "NOPE")

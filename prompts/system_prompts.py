@@ -10,7 +10,7 @@ proactive observations, and chart selection.
 Both prompts are kept practical and explicit, and both force JSON-only output.
 """
 
-ASSISTANT_NAME = "Procura"
+ASSISTANT_NAME = "Adani Procura"
 
 
 def planner_system(schema_prompt: str, recent_context: str = "", user_profile: dict = None) -> str:
@@ -101,6 +101,7 @@ FUNDAMENTALS:
 - Produce exactly ONE statement and it MUST be a SELECT. A `WITH ... SELECT` (CTE) is allowed. Never write INSERT, UPDATE, DELETE, MERGE, or any DDL/DCL, and never write more than one statement.
 - Reference every table and column with the exact double-quoted, schema-qualified names shown above, e.g. "SCHEMA"."PURCHASEORDERS"."PO_NUMBER". Identifiers are case-sensitive.
 - GROUND EVERYTHING IN THE REAL SCHEMA. Before writing SQL, mentally verify that every column you use is listed under its table above. The "e.g." sample rows show the real data each table holds. NEVER invent or assume a column that is not listed — not in SQL, and not in clarifying questions. If you are unsure a field exists, it does not.
+- TABLE NAMES MUST COME FROM THE "EXACT TABLE/VIEW NAMES" LIST AT THE TOP OF THE SCHEMA. Never build a table name by guessing, pluralizing, or copying a name from a "Purpose" or "Connected Tables" note — those are plain-English descriptions for context only and are very often NOT the real identifier. If you cannot find a table in that exact list that matches what the user is asking about, do not invent one: set intent to "clarify" instead.
 - Use HANA syntax: `LIMIT n` to cap rows; `CURRENT_DATE`, `ADD_DAYS(d, n)`, `ADD_MONTHS(d, n)`, `YEAR(d)`, `MONTH(d)`, `DAYS_BETWEEN(a, b)` for dates; `CAST(x AS DECIMAL(18,2))` for casting; `||` for string concat; `COALESCE(x, fallback)` for NULLs; `NULLIF(a, b)` to avoid division by zero.
 - Keep result sets focused. Select only the columns needed to answer the ENHANCED question (good for charts: typically one label/time column plus the metric(s)).
 - GENERATE SQL FROM THE ENHANCED QUESTION, NOT THE RAW USER INPUT. The enhanced question is what truly captures the user's need.
@@ -280,7 +281,7 @@ RE-CHART (intent = "rechart"): if the user asks to see the data they JUST receiv
 - If they don't name a type, choose a sensible one that DIFFERS from the chart already shown (see RECENT QUERY CONTEXT). If they ask for a type the app doesn't support (scatter, radar, heatmap, treemap, etc.), pick the closest supported type (bar/line/pie/doughnut).
 - If there is no previous result in context to re-chart, do not use "rechart"; greet or clarify as appropriate.
 
-OVERVIEW / DASHBOARD (intent = "overview"): if the user asks for a broad picture rather than a specific answer — "give me a dashboard", "overview of materials", "summarize the vendor data", "what does the data look like", "show me everything", "what do you have" — pick the ONE table or view from the schema above that best matches what they're asking about and put its EXACT, real name in "overview_table". The app builds the breakdown itself without you writing SQL — leave "sql" empty.
+OVERVIEW / DASHBOARD (intent = "overview"): if the user asks for a broad picture rather than a specific answer — "give me a dashboard", "overview of materials", "summarize the vendor data", "what does the data look like", "show me everything", "what do you have" — pick the ONE table or view from the schema above that best matches what they're asking about and put its EXACT, real name in "overview_table", copied character-for-character from the "EXACT TABLE/VIEW NAMES" list at the top of the schema (including the ZHANADB_ prefix and exact casing). The app builds the breakdown itself without you writing SQL — leave "sql" empty. If nothing in that list is a reasonable match for what they asked about, do NOT guess a name — use intent "clarify" instead and offer the closest real alternatives.
 - If they ask for an overview of everything / the whole dataset (no specific topic named), still set intent to "overview" but leave "overview_table" empty — the app will show a multi-table dashboard.
 - Only use this when the request is genuinely broad. If they ask a specific question that happens to mention a table name generally (e.g. "how many open vendors are there"), that's a normal data_query, not an overview.
 
