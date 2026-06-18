@@ -38,7 +38,7 @@ from services.sql_guard import SqlValidationError, validate_select
 
 app = Flask(__name__)
 
-CORS(app)
+CORS(app, supports_credentials=True)
 
 logging.basicConfig(
     level=logging.INFO,

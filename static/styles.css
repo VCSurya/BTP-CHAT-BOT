@@ -38,126 +38,7 @@
   transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1), flex 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* ─── Visualization Split Workbench ─── */
-.viz-panel {
-  display: flex;
-  flex-direction: column;
-  background: #090d22;
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
-  width: 0;
-  flex-shrink: 0;
-  opacity: 0;
-  visibility: hidden;
-  overflow: hidden;
-  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  z-index: 110;
-}
 
-.viz-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
-
-.viz-panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 20px;
-  background: #0a0f28;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  min-height: 58px;
-  flex-shrink: 0;
-}
-
-.viz-tabs {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.viz-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #94a3b8;
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
-}
-.viz-tab:hover {
-  color: #f8fafc;
-  background: #1e293b;
-}
-.viz-tab.active {
-  color: #38bdf8;
-  background: rgba(56, 189, 248, 0.08);
-  border-color: rgba(56, 189, 248, 0.2);
-}
-
-.viz-body {
-  flex: 1;
-  overflow: hidden;
-  background: #060813;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-.tab-content {
-  flex: 1;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.explorer-body, .dashboard-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px;
-}
-
-/* Desktop Split Layout Rules */
-@media (min-width: 1024px) {
-  .app.viz-open .chat-area {
-    width: 42%;
-    flex: 0 0 42%;
-  }
-  .app.viz-open .viz-panel {
-    width: 58%;
-    flex: 0 0 58%;
-    opacity: 1;
-    visibility: visible;
-  }
-}
-
-/* Mobile & Tablet Sliding Panel Overlay */
-@media (max-width: 1023px) {
-  .viz-panel {
-    position: fixed;
-    top: 56px; /* below mobile topbar */
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    transform: translateX(100%);
-    visibility: hidden;
-    opacity: 1;
-    border-left: none;
-    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-    z-index: 150;
-  }
-  .app.viz-open .viz-panel {
-    width: 100%;
-    transform: translateX(0);
-    visibility: visible;
-  }
-}
 
 /* ─── Data Tables & SQL Details ─── */
 .table-scroll {
@@ -254,42 +135,99 @@ pre.sql {
     color: #000000 !important;
   }
   
-  .app, .sidebar, .sidebar-overlay, .mobile-topbar, .chat-area, .login-overlay {
+  /* Hide UI chrome */
+  #sidebar, .sidebar, .sidebar-overlay, .mobile-topbar, #composer, #suggestion-chips, #chart-modal, .login-overlay {
     display: none !important;
   }
-  
-  .viz-panel {
+
+  /* Chat container print styles */
+  .app {
     display: block !important;
-    position: static !important;
-    width: 100% !important;
     height: auto !important;
-    background: #ffffff !important;
-    padding: 0 !important;
     overflow: visible !important;
-  }
-  
-  .viz-container {
-    width: 100% !important;
-    max-width: 100% !important;
-    box-shadow: none !important;
-    border: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
     background: #ffffff !important;
   }
-
-  #dashboard-export-btn, #viz-close-btn, .viz-tabs, .category-nav, details.sql, details.data {
-    display: none !important;
-  }
-
-  .viz-panel-header {
-    display: none !important;
+  
+  .chat-area {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: #ffffff !important;
   }
   
-  .dashboard-body {
+  #messages {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
     padding: 0 !important;
   }
 
+  /* Style chat bubbles for printing */
+  .flex.gap-3.max-w-3xl {
+    page-break-inside: avoid;
+    margin-bottom: 24px !important;
+  }
+
+  .flex.gap-3.max-w-3xl > div:first-child {
+    display: none !important; /* Hide avatar */
+  }
+
+  /* Assistant bubble */
+  .max-w-\[85\%\].min-w-0 {
+    max-width: 100% !important;
+    background: transparent !important;
+    color: #000000 !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* User bubble */
+  .bg-gradient-to-tr.from-violet-600\/90.to-fuchsia-600\/80 {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 12px !important;
+    max-width: 100% !important;
+    padding: 10px 14px !important;
+    box-shadow: none !important;
+  }
+
+  /* Details SQL and data tables in print */
+  details.sql, details.data, details {
+    border: 1px solid #cbd5e1 !important;
+    background: #ffffff !important;
+    page-break-inside: avoid;
+  }
+
+  details summary {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    border-bottom: 1px solid #cbd5e1 !important;
+  }
+
+  pre.sql {
+    background: #f8fafc !important;
+    color: #0284c7 !important;
+    border-top: 1px solid #cbd5e1 !important;
+  }
+
+  table {
+    border-collapse: collapse !important;
+  }
+
+  th {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    border-bottom: 1px solid #cbd5e1 !important;
+  }
+
+  td {
+    color: #334155 !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+
+  /* Dashboard Widgets in print */
   .dashboard-main-heading {
     page-break-before: always;
     font-size: 18px !important;

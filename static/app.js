@@ -36,16 +36,11 @@ const newChatBtn = document.getElementById("new-chat-btn");
 const mobileSidebarBtn = document.getElementById("mobile-sidebar-btn");
 const mobileNewChatBtn = document.getElementById("mobile-new-chat-btn");
 
-// Visualization Panel (Workbench)
-const vizPanel = document.getElementById("viz-panel");
-const vizCloseBtn = document.getElementById("viz-close-btn");
-const tabDashboardBtn = document.getElementById("tab-dashboard");
-const tabExplorerBtn = document.getElementById("tab-explorer");
-const panelDashboard = document.getElementById("panel-dashboard-content");
-const panelExplorer = document.getElementById("panel-explorer-content");
-const dashboardBody = document.getElementById("dashboard-body");
-const explorerBody = document.getElementById("explorer-body");
-const exportDashboardBtn = document.getElementById("dashboard-export-btn");
+// Chart modal elements
+const chartModal = document.getElementById("chart-modal");
+const modalCloseBtn = document.getElementById("modal-close-btn");
+const modalChartContainer = document.getElementById("modal-chart-container");
+const sidebarExportBtn = document.getElementById("sidebar-export-btn");
 
 const dashboardBtn = document.getElementById("dashboard-btn");
 
@@ -306,9 +301,9 @@ function renderChart(canvas, chart) {
   });
 }
 
-function buildChartCard(chart) {
+function buildChartCard(chart, isModal = false) {
   const chartWrap = document.createElement("div");
-  chartWrap.className = "chart-wrap bg-slate-900/30 border border-slate-850 rounded-2xl p-4 shadow-sm hover:border-slate-800 hover:shadow-md transition-all duration-200 flex flex-col mt-3";
+  chartWrap.className = `chart-wrap bg-slate-900/30 border border-slate-850 rounded-2xl p-4 shadow-sm hover:border-slate-800 hover:shadow-md transition-all duration-200 flex flex-col mt-3 ${isModal ? 'w-full h-full' : ''}`;
 
   // Card Header Container
   const header = document.createElement("div");
@@ -361,7 +356,7 @@ function buildChartCard(chart) {
 
   // Item Limit Selector
   const limitSelect = document.createElement("select");
-  limitSelect.className = "text-[10px] font-semibold text-slate-400 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 outline-none cursor-pointer hover:bg-slate-900 hover:text-slate-200 active:scale-95 transition-all duration-150 max-w-[92px] truncate";
+  limitSelect.className = "text-[10px] font-semibold text-slate-400 bg-slate-955 border border-slate-800 rounded-lg px-2 py-1 outline-none cursor-pointer hover:bg-slate-900 hover:text-slate-200 active:scale-95 transition-all duration-150 max-w-[92px] truncate";
   limitSelect.title = "Item limit";
   const limits = [
     { label: "All Items", value: "all" },
@@ -389,11 +384,23 @@ function buildChartCard(chart) {
   </svg>`;
   controls.appendChild(exportBtn);
 
+  if (!isModal) {
+    const expandBtn = document.createElement("button");
+    expandBtn.className = "flex items-center justify-center w-7 h-7 rounded-lg border border-slate-800 text-slate-400 bg-slate-955 hover:bg-slate-900 hover:text-slate-200 active:scale-95 transition-all duration-150 cursor-pointer";
+    expandBtn.title = "Maximize Chart";
+    expandBtn.type = "button";
+    expandBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+    </svg>`;
+    expandBtn.addEventListener("click", () => openChartInModal(chart));
+    controls.appendChild(expandBtn);
+  }
+
   header.appendChild(controls);
   chartWrap.appendChild(header);
 
   const box = document.createElement("div");
-  box.className = "chart-canvas-box relative h-[260px] w-full mt-2";
+  box.className = `chart-canvas-box relative w-full mt-2 ${isModal ? "h-[450px] md:h-[500px]" : "h-[260px]"}`;
   const canvas = document.createElement("canvas");
   box.appendChild(canvas);
   chartWrap.appendChild(box);
@@ -490,45 +497,68 @@ function buildChartCard(chart) {
   return chartWrap;
 }
 
+function openChartInModal(chart) {
+  if (!modalChartContainer || !chartModal) return;
+  modalChartContainer.innerHTML = "";
+  const modalChartCard = buildChartCard(chart, true);
+  if (modalChartCard) {
+    modalChartContainer.appendChild(modalChartCard);
+    chartModal.classList.remove("hidden");
+    chartModal.classList.add("flex");
+  }
+}
+
+function closeChartModal() {
+  if (chartModal) {
+    chartModal.classList.add("hidden");
+    chartModal.classList.remove("flex");
+  }
+  if (modalChartContainer) {
+    modalChartContainer.innerHTML = "";
+  }
+}
+
 function renderAssistantData(data) {
   // Always render the reply text in the chat bubble
   addMessage("assistant", `<p>${renderText(data.reply)}</p>`);
 
-  explorerBody.innerHTML = "";
-  let hasViz = false;
-
-  if (data.chart) {
-    const card = buildChartCard(data.chart);
-    if (card) {
-      explorerBody.appendChild(card);
-      hasViz = true;
-    }
-  }
-
-  if (data.table && data.table.rows && data.table.rows.length) {
-    explorerBody.insertAdjacentHTML("beforeend", buildTable(data.table));
-    hasViz = true;
-  }
-
-  if (data.truncated) {
-    explorerBody.insertAdjacentHTML(
-      "beforeend",
-      `<p class="text-xs text-slate-500 font-medium italic mt-2">Showing the first ${data.table.rows.length} of more rows.</p>`
-    );
-  }
-
-  if (data.sql) {
-    explorerBody.insertAdjacentHTML(
-      "beforeend",
-      `<details class="sql"><summary>View SQL</summary><pre class="sql">${escapeHtml(
-        data.sql
-      )}</pre></details>`
-    );
-  }
-
+  // Create a separate, full-width container for visualizations (charts, tables, SQL details)
+  const hasViz = data.chart || (data.table && data.table.rows && data.table.rows.length) || data.sql;
+  
   if (hasViz) {
-    openVizPanel("explorer");
+    const vizWrap = document.createElement("div");
+    vizWrap.className = "w-full max-w-4xl mx-auto my-4 space-y-4 animate-fadeInUp flex flex-col";
+
+    if (data.chart) {
+      const card = buildChartCard(data.chart);
+      if (card) {
+        vizWrap.appendChild(card);
+      }
+    }
+
+    if (data.table && data.table.rows && data.table.rows.length) {
+      vizWrap.insertAdjacentHTML("beforeend", buildTable(data.table));
+    }
+
+    if (data.truncated) {
+      vizWrap.insertAdjacentHTML(
+        "beforeend",
+        `<p class="text-xs text-slate-500 font-medium italic mt-2 self-start">Showing the first ${data.table.rows.length} of more rows.</p>`
+      );
+    }
+
+    if (data.sql) {
+      vizWrap.insertAdjacentHTML(
+        "beforeend",
+        `<details class="sql mt-3"><summary>View SQL</summary><pre class="sql">${escapeHtml(
+          data.sql
+        )}</pre></details>`
+      );
+    }
+
+    messagesEl.appendChild(vizWrap);
   }
+
   scrollToBottom();
 }
 
@@ -871,120 +901,104 @@ function buildAiInsightsBlock(ai) {
   return card;
 }
 
-function renderAssistantDashboard(data) {
-  // Render the reply text in the chat bubble
-  addMessage("assistant", `<p>${renderText(data.reply)}</p>`);
-  
-  // Render the actual dashboard widgets directly in the Dashboard tab of the right panel
-  renderDashboardPanel(data);
-  
-  // Open the visualization panel, focused on the Executive Dashboard
-  openVizPanel("dashboard");
-  scrollToBottom();
-}
-
-// ─── Dashboard panel ──────────────────────────────────────────
-
-function renderDashboardPanel(data) {
-  dashboardBody.innerHTML = "";
+function renderDashboardPanel(data, container) {
+  if (!container) return;
+  container.innerHTML = "";
   const categories = data.categories || [];
   
   if (data.ai_insights) {
-    dashboardBody.appendChild(buildAiInsightsBlock(data.ai_insights));
+    container.appendChild(buildAiInsightsBlock(data.ai_insights));
   }
   
   if (data.business_summary) {
     const heading = document.createElement("h2");
     heading.className = "text-base font-extrabold text-slate-100 tracking-tight mb-4 flex items-center gap-2 mt-4";
     heading.textContent = "Executive Business Insights";
-    dashboardBody.appendChild(heading);
+    container.appendChild(heading);
     
-    dashboardBody.appendChild(buildBusinessKpiGrid(data.business_summary));
-    dashboardBody.appendChild(buildBusinessAnalyticsRow(data.business_summary));
+    container.appendChild(buildBusinessKpiGrid(data.business_summary));
+    container.appendChild(buildBusinessAnalyticsRow(data.business_summary));
     
     const divider = document.createElement("hr");
     divider.className = "border-slate-800/80 my-8";
-    dashboardBody.appendChild(divider);
+    container.appendChild(divider);
   }
 
   if (!categories.length) {
-    dashboardBody.innerHTML += '<p class="text-sm text-slate-500 font-medium italic">No data available to summarise yet.</p>';
+    container.innerHTML += '<p class="text-sm text-slate-500 font-medium italic">No data available to summarise yet.</p>';
     return;
   }
   
   const secHeading = document.createElement("h2");
   secHeading.className = "text-base font-extrabold text-slate-100 tracking-tight mb-4 flex items-center gap-2";
   secHeading.textContent = "Business Domain Exploration";
-  dashboardBody.appendChild(secHeading);
+  container.appendChild(secHeading);
 
-  dashboardBody.appendChild(buildCategoryNav(categories, "panel"));
-  categories.forEach((category) => dashboardBody.appendChild(buildCategoryBlock(category, "panel")));
+  const anchorPrefix = "dash-" + Date.now();
+  container.appendChild(buildCategoryNav(categories, anchorPrefix));
+  categories.forEach((category) => container.appendChild(buildCategoryBlock(category, anchorPrefix)));
 }
 
-function openVizPanel(activeTab = "dashboard") {
-  app.classList.add("viz-open");
-  vizPanel.setAttribute("aria-hidden", "false");
-  switchVizTab(activeTab);
-  closeSidebar();
-}
-
-function closeVizPanel() {
-  app.classList.remove("viz-open");
-  vizPanel.setAttribute("aria-hidden", "true");
-}
-
-function switchVizTab(tabName) {
-  if (tabName === "dashboard") {
-    tabDashboardBtn.classList.add("active");
-    tabExplorerBtn.classList.remove("active");
-    panelDashboard.classList.remove("hidden");
-    panelExplorer.classList.add("hidden");
-    if (exportDashboardBtn) exportDashboardBtn.style.display = "flex";
-  } else {
-    tabDashboardBtn.classList.remove("active");
-    tabExplorerBtn.classList.add("active");
-    panelDashboard.classList.add("hidden");
-    panelExplorer.classList.remove("hidden");
-    if (exportDashboardBtn) exportDashboardBtn.style.display = "none";
-  }
+function renderAssistantDashboard(data) {
+  // Render the reply text in a standard assistant bubble
+  addMessage("assistant", `<p>${renderText(data.reply)}</p>`);
+  
+  // Create a separate, full-width container for the dashboard widgets
+  const dashboardWrap = document.createElement("div");
+  dashboardWrap.className = "w-full max-w-5xl mx-auto my-6 space-y-6 animate-fadeInUp dashboard-wrap-outer";
+  renderDashboardPanel(data, dashboardWrap);
+  messagesEl.appendChild(dashboardWrap);
+  
+  scrollToBottom();
 }
 
 async function openDashboard() {
-  openVizPanel("dashboard");
-  dashboardBody.innerHTML = '<p class="text-sm text-slate-500 font-medium italic">Crunching the latest numbers…</p>';
+  const bubble = addMessage("assistant", `<p class="italic text-slate-400">Loading Executive Business Dashboard...</p>`);
   try {
     const res = await fetch("/api/dashboard");
     const data = await res.json();
     if (data.error) {
-      dashboardBody.innerHTML = `<p class="text-sm text-slate-500 font-medium italic">${escapeHtml(data.error)}</p>`;
+      bubble.innerHTML = `<p class="text-rose-400 font-medium">${escapeHtml(data.error)}</p>`;
       return;
     }
-    renderDashboardPanel(data);
+    
+    bubble.innerHTML = `<p class="font-bold text-slate-100 mb-4">📊 Executive Procurement Dashboard</p>`;
+    
+    const dashboardWrap = document.createElement("div");
+    dashboardWrap.className = "w-full max-w-5xl mx-auto my-6 space-y-6 animate-fadeInUp dashboard-wrap-outer";
+    renderDashboardPanel(data, dashboardWrap);
+    messagesEl.appendChild(dashboardWrap);
+    
+    scrollToBottom();
   } catch (err) {
     console.error(err);
-    dashboardBody.innerHTML = '<p class="text-sm text-slate-500 font-medium italic">Could not load the dashboard right now.</p>';
+    bubble.innerHTML = '<p class="text-rose-400">Could not load the dashboard right now.</p>';
   }
 }
 
-// Bind tabs click event listeners
-if (tabDashboardBtn) tabDashboardBtn.addEventListener("click", () => switchVizTab("dashboard"));
-if (tabExplorerBtn) tabExplorerBtn.addEventListener("click", () => switchVizTab("explorer"));
-if (vizCloseBtn) vizCloseBtn.addEventListener("click", closeVizPanel);
-
 if (dashboardBtn) dashboardBtn.addEventListener("click", openDashboard);
 
-if (exportDashboardBtn) {
-  exportDashboardBtn.addEventListener("click", () => {
+if (sidebarExportBtn) {
+  sidebarExportBtn.addEventListener("click", () => {
     window.print();
   });
 }
 
-// Close panel on Escape
+if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeChartModal);
+if (chartModal) {
+  chartModal.addEventListener("click", (e) => {
+    if (e.target === chartModal) {
+      closeChartModal();
+    }
+  });
+}
+
+// Close modal or sidebar on Escape
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
-    if (app.classList.contains("viz-open")) {
-      closeVizPanel();
-    } else if (sidebar.classList.contains("open")) {
+    if (chartModal && !chartModal.classList.contains("hidden")) {
+      closeChartModal();
+    } else if (sidebar && sidebar.classList.contains("open")) {
       closeSidebar();
     }
   }
