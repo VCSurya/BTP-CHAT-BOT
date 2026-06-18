@@ -223,7 +223,7 @@ class HanaService:
                     if id_column is None:
                         # Fall back to the first column if none of the common names match.
                         id_column = columns[5]
-
+                    id_column = 'EMAIL'
                     sql = (
                         f'SELECT {col_list} FROM "{schema}"."ZHANADB_USERSET" '
                         f'WHERE "{id_column}" = ? LIMIT 1'

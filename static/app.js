@@ -130,15 +130,15 @@ function addMessage(role, htmlContent, opts = {}) {
       <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
     </svg>`;
   } else {
-    avatar.className = "w-8 h-8 rounded-lg bg-slate-200 border border-slate-300 text-slate-600 flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-xs shadow-sm";
+    avatar.className = "w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-xs shadow-sm";
     avatar.textContent = "You";
   }
 
   const bubble = document.createElement("div");
   if (role === "assistant") {
-    bubble.className = "max-w-[85%] min-w-0 bg-white border border-slate-200 rounded-2xl rounded-tl-sm px-4.5 py-3 text-slate-800 text-sm shadow-sm leading-relaxed" + (opts.error ? " border-red-200 bg-red-50/30 text-red-800" : "");
+    bubble.className = "max-w-[85%] min-w-0 bg-slate-900/80 border border-slate-800/80 rounded-2xl rounded-tl-sm px-4.5 py-3 text-slate-200 text-sm shadow-sm leading-relaxed" + (opts.error ? " border-red-900/50 bg-red-950/20 text-red-400" : "");
   } else {
-    bubble.className = "max-w-[85%] min-w-0 bg-gradient-to-tr from-brand-50 to-brand-100/50 border border-brand-100 rounded-2xl rounded-tr-sm px-4.5 py-3 text-brand-950 text-sm shadow-sm leading-relaxed";
+    bubble.className = "max-w-[85%] min-w-0 bg-gradient-to-tr from-violet-600/90 to-fuchsia-600/80 border border-violet-500/30 rounded-2xl rounded-tr-sm px-4.5 py-3 text-white text-sm shadow-sm leading-relaxed";
   }
   bubble.innerHTML = htmlContent;
 
@@ -169,11 +169,11 @@ function showTyping() {
   </svg>`;
 
   const bubble = document.createElement("div");
-  bubble.className = "max-w-[85%] min-w-0 bg-white border border-slate-200/80 rounded-2xl rounded-tl-sm px-4 py-3 text-slate-800 text-sm shadow-sm";
+  bubble.className = "max-w-[85%] min-w-0 bg-slate-900/85 border border-slate-800/80 rounded-2xl rounded-tl-sm px-4 py-3 text-slate-200 text-sm shadow-sm";
   bubble.innerHTML = `<div class="flex items-center gap-1">
-    <span class="w-1.5 h-1.5 rounded-full bg-brand-600 animate-bounce" style="animation-delay: 0.1s"></span>
-    <span class="w-1.5 h-1.5 rounded-full bg-brand-600 animate-bounce" style="animation-delay: 0.2s"></span>
-    <span class="w-1.5 h-1.5 rounded-full bg-brand-600 animate-bounce" style="animation-delay: 0.3s"></span>
+    <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-bounce" style="animation-delay: 0.1s"></span>
+    <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-bounce" style="animation-delay: 0.2s"></span>
+    <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-bounce" style="animation-delay: 0.3s"></span>
   </div>`;
 
   wrap.appendChild(avatar);
@@ -187,27 +187,27 @@ function showTyping() {
 
 function buildTable(table) {
   if (!table || !table.columns || !table.columns.length) return "";
-  const head = table.columns.map((c) => `<th class="px-4 py-2.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider bg-slate-50 border-b border-slate-200 sticky top-0">${escapeHtml(c)}</th>`).join("");
+  const head = table.columns.map((c) => `<th class="px-4 py-2.5 text-left text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-900 border-b border-slate-800 sticky top-0">${escapeHtml(c)}</th>`).join("");
   const body = table.rows
     .map(
       (row) =>
-        `<tr class="hover:bg-slate-50/50 border-b border-slate-100 transition-colors">` +
+        `<tr class="hover:bg-slate-800/40 border-b border-slate-900 transition-colors">` +
         table.columns
-          .map((c) => `<td class="px-4 py-2.5 text-sm text-slate-700 whitespace-nowrap">${escapeHtml(row[c])}</td>`)
+          .map((c) => `<td class="px-4 py-2.5 text-sm text-slate-300 whitespace-nowrap">${escapeHtml(row[c])}</td>`)
           .join("") +
         "</tr>"
     )
     .join("");
   return `
-    <details class="border border-slate-200/80 rounded-xl overflow-hidden bg-white shadow-sm mt-3" open>
-      <summary class="cursor-pointer px-4 py-3 bg-slate-50 hover:bg-slate-100/80 text-sm font-semibold text-slate-700 select-none flex items-center gap-2 list-none transition-colors border-b border-slate-200/50">
-        <span class="text-xs text-slate-400">▼</span>
+    <details class="border border-slate-800/80 rounded-xl overflow-hidden bg-slate-955/40 shadow-sm mt-3" open>
+      <summary class="cursor-pointer px-4 py-3 bg-slate-900/60 hover:bg-slate-900 text-sm font-semibold text-slate-300 select-none flex items-center gap-2 list-none transition-colors border-b border-slate-800/50">
+        <span class="text-xs text-slate-500">▼</span>
         View Data Table (${table.rows.length} row${table.rows.length === 1 ? "" : "s"})
       </summary>
       <div class="overflow-x-auto max-h-80">
-        <table class="min-w-full divide-y divide-slate-200">
+        <table class="min-w-full divide-y divide-slate-800">
           <thead><tr>${head}</tr></thead>
-          <tbody class="divide-y divide-slate-100 bg-white">${body}</tbody>
+          <tbody class="divide-y divide-slate-900 bg-transparent">${body}</tbody>
         </table>
       </div>
     </details>`;
@@ -269,7 +269,7 @@ function renderChart(canvas, chart) {
           display: showLegend,
           position: isPie ? "bottom" : "top",
           labels: {
-            color: "#475569",
+            color: "#94a3b8",
             boxWidth: 12,
             boxHeight: 12,
             borderRadius: 3,
@@ -281,8 +281,8 @@ function renderChart(canvas, chart) {
         tooltip: {
           backgroundColor: "rgba(15, 23, 42, 0.95)",
           titleColor: "#f8fafc",
-          bodyColor: "#94a3b8",
-          borderColor: "rgba(0,0,0,0.05)",
+          bodyColor: "#cbd5e1",
+          borderColor: "rgba(255, 255, 255, 0.08)",
           borderWidth: 1,
           cornerRadius: 8,
           padding: 10,
@@ -294,12 +294,12 @@ function renderChart(canvas, chart) {
         ? {}
         : {
             x: {
-              ticks: { color: "#475569", font: { size: 11 } },
-              grid: { color: "rgba(0,0,0,0.06)", drawBorder: false },
+              ticks: { color: "#94a3b8", font: { size: 11 } },
+              grid: { color: "rgba(255, 255, 255, 0.08)", drawBorder: false },
             },
             y: {
-              ticks: { color: "#475569", font: { size: 11 } },
-              grid: { color: "rgba(0,0,0,0.06)", drawBorder: false },
+              ticks: { color: "#94a3b8", font: { size: 11 } },
+              grid: { color: "rgba(255, 255, 255, 0.08)", drawBorder: false },
             },
           },
     },
@@ -308,7 +308,7 @@ function renderChart(canvas, chart) {
 
 function buildChartCard(chart) {
   const chartWrap = document.createElement("div");
-  chartWrap.className = "bg-slate-50 border border-slate-200/80 rounded-2xl p-4 shadow-sm hover:border-slate-300 hover:shadow-md transition-all duration-200 flex flex-col mt-3";
+  chartWrap.className = "chart-wrap bg-slate-900/30 border border-slate-850 rounded-2xl p-4 shadow-sm hover:border-slate-800 hover:shadow-md transition-all duration-200 flex flex-col mt-3";
 
   // Card Header Container
   const header = document.createElement("div");
@@ -325,7 +325,7 @@ function buildChartCard(chart) {
 
   // Chart Type Selector
   const typeSelect = document.createElement("select");
-  typeSelect.className = "text-[10px] font-semibold text-slate-600 bg-white border border-slate-200 rounded-lg px-2 py-1 outline-none cursor-pointer hover:bg-slate-50 active:scale-95 transition-all duration-150 max-w-[92px] truncate";
+  typeSelect.className = "text-[10px] font-semibold text-slate-400 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 outline-none cursor-pointer hover:bg-slate-900 hover:text-slate-200 active:scale-95 transition-all duration-150 max-w-[92px] truncate";
   typeSelect.title = "Chart Type";
   const types = [
     { label: "Bar Chart", value: "bar" },
@@ -344,7 +344,7 @@ function buildChartCard(chart) {
 
   // Sort Order Selector
   const sortSelect = document.createElement("select");
-  sortSelect.className = "text-[10px] font-semibold text-slate-600 bg-white border border-slate-200 rounded-lg px-2 py-1 outline-none cursor-pointer hover:bg-slate-50 active:scale-95 transition-all duration-150 max-w-[92px] truncate";
+  sortSelect.className = "text-[10px] font-semibold text-slate-400 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 outline-none cursor-pointer hover:bg-slate-900 hover:text-slate-200 active:scale-95 transition-all duration-150 max-w-[92px] truncate";
   sortSelect.title = "Sort order";
   const sorts = [
     { label: "Original Sort", value: "original" },
@@ -361,7 +361,7 @@ function buildChartCard(chart) {
 
   // Item Limit Selector
   const limitSelect = document.createElement("select");
-  limitSelect.className = "text-[10px] font-semibold text-slate-600 bg-white border border-slate-200 rounded-lg px-2 py-1 outline-none cursor-pointer hover:bg-slate-50 active:scale-95 transition-all duration-150 max-w-[92px] truncate";
+  limitSelect.className = "text-[10px] font-semibold text-slate-400 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 outline-none cursor-pointer hover:bg-slate-900 hover:text-slate-200 active:scale-95 transition-all duration-150 max-w-[92px] truncate";
   limitSelect.title = "Item limit";
   const limits = [
     { label: "All Items", value: "all" },
@@ -379,7 +379,7 @@ function buildChartCard(chart) {
 
   // Download PNG Button
   const exportBtn = document.createElement("button");
-  exportBtn.className = "flex items-center justify-center w-7 h-7 rounded-lg border border-slate-200 text-slate-500 bg-white hover:bg-slate-50 hover:text-slate-700 active:scale-95 transition-all duration-150 cursor-pointer";
+  exportBtn.className = "flex items-center justify-center w-7 h-7 rounded-lg border border-slate-800 text-slate-400 bg-slate-950 hover:bg-slate-900 hover:text-slate-200 active:scale-95 transition-all duration-150 cursor-pointer";
   exportBtn.title = "Download Chart (PNG)";
   exportBtn.type = "button";
   exportBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -393,7 +393,7 @@ function buildChartCard(chart) {
   chartWrap.appendChild(header);
 
   const box = document.createElement("div");
-  box.className = "chart-canvas-box";
+  box.className = "chart-canvas-box relative h-[260px] w-full mt-2";
   const canvas = document.createElement("canvas");
   box.appendChild(canvas);
   chartWrap.appendChild(box);
@@ -560,9 +560,9 @@ function formatKpiValue(kpi) {
 
 function buildKpiTile(kpi) {
   return `
-    <div class="flex flex-col gap-1 p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl min-w-[120px] transition-all hover:bg-slate-100/50">
-      <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">${escapeHtml(kpi.label)}</span>
-      <span class="text-lg font-extrabold text-slate-900 leading-tight">${formatKpiValue(kpi)}</span>
+    <div class="flex flex-col gap-1 p-3.5 bg-slate-955 border border-slate-850 rounded-xl min-w-[120px] transition-all hover:bg-slate-900/60">
+      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">${escapeHtml(kpi.label)}</span>
+      <span class="text-lg font-extrabold text-slate-100 leading-tight">${formatKpiValue(kpi)}</span>
     </div>`;
 }
 
@@ -570,7 +570,7 @@ function buildTrendBadge(trend) {
   if (!trend) return "";
   const up = trend.change_pct >= 0;
   const arrow = up ? "M12 19V5M5 12l7-7 7 7" : "M12 5v14M5 12l7 7 7-7";
-  const badgeColor = up ? "text-emerald-700 bg-emerald-50 border-emerald-100" : "text-rose-700 bg-rose-50 border-rose-100";
+  const badgeColor = up ? "text-emerald-400 bg-emerald-950/20 border-emerald-900/30" : "text-rose-400 bg-rose-950/20 border-rose-900/30";
   return `
     <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${badgeColor}" title="Last 30 days: ${trend.current_30d.toLocaleString()} vs previous 30 days: ${trend.previous_30d.toLocaleString()}">
       ${iconSvg(`<path d="${arrow}"/>`, 12)}
@@ -580,32 +580,32 @@ function buildTrendBadge(trend) {
 
 function buildSectionCard(section) {
   const card = document.createElement("div");
-  card.className = "bg-white border border-slate-200 border-l-4 border-l-brand-600 rounded-2xl p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-slate-300";
+  card.className = "section-card bg-slate-900/40 backdrop-blur border border-slate-850 border-l-4 border-l-brand-600 rounded-2xl p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-slate-800";
 
   const kpiTiles = (section.kpis || []).map(buildKpiTile).join("");
   const trendHtml = buildTrendBadge(section.trend);
   const highlightHtml = section.highlight
-    ? `<div class="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50/50 border border-amber-100 text-amber-800 text-xs font-medium leading-relaxed mb-4">
+    ? `<div class="flex items-start gap-2.5 p-3 rounded-xl bg-amber-955/20 border border-amber-900/30 text-amber-200 text-xs font-medium leading-relaxed mb-4">
         <span class="text-amber-500 mt-0.5">${iconSvg('<path d="M13 2 3 14h7l-1 8 11-12h-7l1-8z"/>', 14)}</span>
-        <span class="text-slate-700">${escapeHtml(section.highlight)}</span>
+        <span class="text-slate-300">${escapeHtml(section.highlight)}</span>
        </div>`
     : "";
 
   card.innerHTML = `
     <div class="flex items-center justify-between gap-4 flex-wrap mb-2">
       <div class="flex items-center gap-2.5">
-        <span class="flex items-center justify-center w-7 h-7 rounded-lg bg-brand-50 text-brand-600">${iconSvg(CATEGORY_ICONS[section.category] || DEFAULT_ICON, 14)}</span>
-        <h4 class="text-sm font-bold text-slate-900 tracking-tight">${escapeHtml(section.name)}</h4>
+        <span class="flex items-center justify-center w-7 h-7 rounded-lg bg-brand-950/50 border border-brand-900/30 text-brand-400">${iconSvg(CATEGORY_ICONS[section.category] || DEFAULT_ICON, 14)}</span>
+        <h4 class="text-sm font-bold text-slate-100 tracking-tight">${escapeHtml(section.name)}</h4>
       </div>
       ${trendHtml}
     </div>
-    ${section.description ? `<p class="text-xs text-slate-500 leading-relaxed mb-4">${escapeHtml(section.description)}</p>` : ""}
+    ${section.description ? `<p class="text-xs text-slate-400 leading-relaxed mb-4">${escapeHtml(section.description)}</p>` : ""}
     <div class="flex flex-wrap gap-2.5 mb-4">${kpiTiles}</div>
     ${highlightHtml}
   `;
 
   const grid = document.createElement("div");
-  grid.className = "grid grid-cols-1 sm:grid-cols-2 gap-3";
+  grid.className = "chart-grid grid grid-cols-1 sm:grid-cols-2 gap-3";
   (section.charts || []).forEach((chart) => {
     const chartCard = buildChartCard(chart);
     if (chartCard) grid.appendChild(chartCard);
@@ -617,20 +617,20 @@ function buildSectionCard(section) {
 function buildCategoryBlock(category, anchorPrefix) {
   const slug = (anchorPrefix || "cat") + "-" + category.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   const block = document.createElement("section");
-  block.className = "space-y-4 scroll-mt-6";
+  block.className = "category-block space-y-4 scroll-mt-6";
   block.id = slug;
 
   const heading = document.createElement("div");
-  heading.className = "flex items-center gap-3.5 pb-2 border-b border-slate-100";
+  heading.className = "flex items-center gap-3.5 pb-2 border-b border-slate-900";
   heading.innerHTML = `
-    <span class="flex items-center justify-center w-8 h-8 rounded-xl bg-brand-50 text-brand-600 shadow-sm">${iconSvg(CATEGORY_ICONS[category.name] || DEFAULT_ICON, 16)}</span>
-    <h3 class="text-base font-extrabold text-slate-900 tracking-tight">${escapeHtml(category.name)}</h3>
-    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-slate-500 bg-slate-100 border border-slate-200/60">${category.sections.length} area${category.sections.length === 1 ? "" : "s"}</span>
+    <span class="flex items-center justify-center w-8 h-8 rounded-xl bg-brand-955/50 border border-brand-900/30 text-brand-400 shadow-sm">${iconSvg(CATEGORY_ICONS[category.name] || DEFAULT_ICON, 16)}</span>
+    <h3 class="text-base font-extrabold text-slate-100 tracking-tight">${escapeHtml(category.name)}</h3>
+    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-slate-400 bg-slate-900 border border-slate-800">${category.sections.length} area${category.sections.length === 1 ? "" : "s"}</span>
   `;
   block.appendChild(heading);
 
   const grid = document.createElement("div");
-  grid.className = "grid grid-cols-1 xl:grid-cols-2 gap-5";
+  grid.className = "category-grid grid grid-cols-1 xl:grid-cols-2 gap-5";
   category.sections.forEach((section) => grid.appendChild(buildSectionCard(section)));
   block.appendChild(grid);
   return block;
@@ -647,9 +647,9 @@ function buildSummaryStrip(summary) {
   strip.innerHTML = items
     .map(
       (item) => `
-      <div class="relative flex flex-col gap-1 p-5 rounded-2xl bg-gradient-to-br from-brand-50/50 to-slate-100 border border-slate-200 shadow-sm overflow-hidden group">
-        <span class="text-2xl font-black text-slate-900 tracking-tight">${Math.round(item.value).toLocaleString()}</span>
-        <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">${escapeHtml(item.label)}</span>
+      <div class="relative flex flex-col gap-1 p-5 rounded-2xl bg-gradient-to-br from-[#0c1024] to-slate-950 border border-slate-900 shadow-sm overflow-hidden group">
+        <span class="text-2xl font-black text-slate-100 tracking-tight">${Math.round(item.value).toLocaleString()}</span>
+        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">${escapeHtml(item.label)}</span>
       </div>`
     )
     .join("");
@@ -658,11 +658,11 @@ function buildSummaryStrip(summary) {
 
 function buildCategoryNav(categories, anchorPrefix) {
   const nav = document.createElement("div");
-  nav.className = "flex flex-wrap gap-2 pb-4 mb-6 border-b border-slate-200/80";
+  nav.className = "flex flex-wrap gap-2 pb-4 mb-6 border-b border-slate-900";
   categories.forEach((category) => {
     const slug = (anchorPrefix || "cat") + "-" + category.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     const pill = document.createElement("a");
-    pill.className = "inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-brand-50 hover:text-brand-700 hover:border-brand-200 border border-slate-200 text-slate-600 transition-all duration-150 shadow-sm";
+    pill.className = "inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold bg-slate-900/60 hover:bg-slate-900 hover:text-brand-400 hover:border-brand-900/50 border border-slate-800 text-slate-300 transition-all duration-150 shadow-sm";
     pill.href = `#${slug}`;
     pill.textContent = category.name;
     nav.appendChild(pill);
@@ -687,7 +687,7 @@ function formatCurrency(val) {
 
 function buildBusinessKpiGrid(bs) {
   const grid = document.createElement("div");
-  grid.className = "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-6";
+  grid.className = "business-kpi-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-6";
 
   if (!bs) {
     grid.innerHTML = '<p class="text-sm text-slate-500 font-medium italic">No KPI metrics data available.</p>';
@@ -706,53 +706,53 @@ function buildBusinessKpiGrid(bs) {
       value: formatCurrency(bs.total_spend),
       desc: "Cumulative value of all active purchase contracts",
       icon: '<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
-      colorClass: "border-t-brand-600 text-brand-600 bg-brand-50"
+      colorClass: "border-t-brand-500 text-brand-400 bg-brand-950/40 border-brand-900/20"
     },
     {
       label: "Active POs",
       value: poCount.toLocaleString(),
       desc: "Unique purchase orders currently being executed",
       icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8"/>',
-      colorClass: "border-t-cyan-600 text-cyan-600 bg-cyan-50"
+      colorClass: "border-t-cyan-500 text-cyan-400 bg-cyan-950/40 border-cyan-900/20"
     },
     {
       label: "Approved Vendors",
       value: vendorCount.toLocaleString(),
       desc: "Contracted suppliers delivering raw materials",
       icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
-      colorClass: "border-t-purple-600 text-purple-600 bg-purple-50"
+      colorClass: "border-t-purple-500 text-purple-400 bg-purple-950/40 border-purple-900/20"
     },
     {
       label: "Quality Checks",
       value: inspectionCount.toLocaleString(),
       desc: "Inspections scheduled at manufacturer sites",
       icon: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
-      colorClass: "border-t-emerald-600 text-emerald-600 bg-emerald-50"
+      colorClass: "border-t-emerald-500 text-emerald-400 bg-emerald-950/40 border-emerald-900/20"
     },
     {
       label: "Quality Defects (NCR)",
       value: ncrCount.toLocaleString(),
       desc: "Active non-conformance reports registered",
       icon: '<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>',
-      colorClass: "border-t-rose-600 text-rose-600 bg-rose-50"
+      colorClass: "border-t-rose-500 text-rose-400 bg-rose-955/40 border-rose-900/20"
     },
     {
       label: "Pending Queries",
       value: queryCount.toLocaleString(),
       desc: "Clarifications/RFIs currently open for POs",
       icon: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
-      colorClass: "border-t-amber-500 text-amber-600 bg-amber-50"
+      colorClass: "border-t-amber-500 text-amber-400 bg-amber-955/40 border-amber-900/20"
     }
   ];
 
   grid.innerHTML = cards.map(c => `
-    <div class="flex flex-col gap-3.5 p-5 bg-white border border-slate-200 border-t-4 ${c.colorClass.split(' ')[0]} rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-slate-300">
+    <div class="business-kpi-card flex flex-col gap-3.5 p-5 bg-slate-900/40 border border-slate-850 border-t-4 ${c.colorClass.split(' ')[0]} rounded-2xl shadow transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-slate-800">
       <div class="flex items-center justify-between gap-4">
         <span class="flex items-center justify-center w-9 h-9 rounded-xl ${c.colorClass.split(' ').slice(1).join(' ')}">${iconSvg(c.icon, 18)}</span>
-        <span class="text-xl font-extrabold text-slate-900">${c.value}</span>
+        <span class="text-xl font-extrabold text-slate-100">${c.value}</span>
       </div>
       <div class="space-y-0.5">
-        <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">${escapeHtml(c.label)}</h4>
+        <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider">${escapeHtml(c.label)}</h4>
         <p class="text-xs text-slate-400 font-medium leading-relaxed">${escapeHtml(c.desc)}</p>
       </div>
     </div>
@@ -763,7 +763,7 @@ function buildBusinessKpiGrid(bs) {
 
 function buildBusinessAnalyticsRow(bs) {
   const row = document.createElement("div");
-  row.className = "grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6";
+  row.className = "dashboard-analytics-row grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6";
 
   if (!bs) {
     row.innerHTML = '<p class="text-sm text-slate-500 font-medium italic">No supplier analytics data available.</p>';
@@ -782,10 +782,10 @@ function buildBusinessAnalyticsRow(bs) {
     return `
       <div class="space-y-1.5">
         <div class="flex items-center justify-between text-xs font-semibold gap-4">
-          <span class="text-slate-700 truncate" title="${escapeHtml(v.vendor)}">${escapeHtml(v.vendor)}</span>
-          <span class="text-slate-900 font-bold tabular-nums">${formatCurrency(spendVal)}</span>
+          <span class="text-slate-300 truncate" title="${escapeHtml(v.vendor)}">${escapeHtml(v.vendor)}</span>
+          <span class="text-slate-100 font-bold tabular-nums">${formatCurrency(spendVal)}</span>
         </div>
-        <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+        <div class="h-2 w-full bg-slate-950 rounded-full overflow-hidden">
           <div class="h-full rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500 transition-all duration-500" style="width: ${pct}%"></div>
         </div>
       </div>
@@ -798,10 +798,10 @@ function buildBusinessAnalyticsRow(bs) {
     return `
       <div class="space-y-1.5">
         <div class="flex items-center justify-between text-xs font-semibold gap-4">
-          <span class="text-slate-700 truncate">${escapeHtml(c.category)}</span>
-          <span class="text-slate-900 font-bold tabular-nums">${countVal} POs</span>
+          <span class="text-slate-300 truncate">${escapeHtml(c.category)}</span>
+          <span class="text-slate-100 font-bold tabular-nums">${countVal} POs</span>
         </div>
-        <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+        <div class="h-2 w-full bg-slate-955 rounded-full overflow-hidden">
           <div class="h-full rounded-full bg-gradient-to-r from-purple-400 to-rose-400 transition-all duration-500" style="width: ${pct}%"></div>
         </div>
       </div>
@@ -809,19 +809,19 @@ function buildBusinessAnalyticsRow(bs) {
   }).join("");
 
   row.innerHTML = `
-    <div class="flex flex-col gap-4 p-5 bg-white border border-slate-200 rounded-2xl shadow-sm">
-      <div class="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-        <span class="text-emerald-500">${iconSvg('<circle cx="12" cy="8" r="7"/><path d="M5.21 14A10 10 0 0 0 12 22a10 10 0 0 0 6.79-8M3 10h18"/>', 16)}</span>
-        <h4 class="text-sm font-extrabold text-slate-800 tracking-tight">Top Suppliers by Spend</h4>
+    <div class="top-list-card flex flex-col gap-4 p-5 bg-slate-900/40 border border-slate-850 rounded-2xl shadow-sm">
+      <div class="flex items-center gap-2.5 pb-3 border-b border-slate-850">
+        <span class="text-emerald-400">${iconSvg('<circle cx="12" cy="8" r="7"/><path d="M5.21 14A10 10 0 0 0 12 22a10 10 0 0 0 6.79-8M3 10h18"/>', 16)}</span>
+        <h4 class="text-sm font-extrabold text-slate-200 tracking-tight">Top Suppliers by Spend</h4>
       </div>
       <div class="flex flex-col gap-3.5">
         ${vendorItems || '<p class="text-xs text-slate-400 italic">No supplier spend data available.</p>'}
       </div>
     </div>
-    <div class="flex flex-col gap-4 p-5 bg-white border border-slate-200 rounded-2xl shadow-sm">
-      <div class="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-        <span class="text-purple-500">${iconSvg('<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>', 16)}</span>
-        <h4 class="text-sm font-extrabold text-slate-800 tracking-tight">Top Product Categories</h4>
+    <div class="top-list-card flex flex-col gap-4 p-5 bg-slate-900/40 border border-slate-850 rounded-2xl shadow-sm">
+      <div class="flex items-center gap-2.5 pb-3 border-b border-slate-850">
+        <span class="text-purple-400">${iconSvg('<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>', 16)}</span>
+        <h4 class="text-sm font-extrabold text-slate-200 tracking-tight">Top Product Categories</h4>
       </div>
       <div class="flex flex-col gap-3.5">
         ${categoryItems || '<p class="text-xs text-slate-400 italic">No product category data available.</p>'}
@@ -835,7 +835,7 @@ function buildBusinessAnalyticsRow(bs) {
 function buildAiInsightsBlock(ai) {
   if (!ai) return document.createElement("div");
   const card = document.createElement("div");
-  card.className = "flex flex-col gap-4 p-6 bg-gradient-to-br from-brand-900 to-slate-950 text-white rounded-3xl border border-brand-950 shadow-xl shadow-brand-950/10 mb-6";
+  card.className = "ai-insights-card flex flex-col gap-4 p-6 bg-gradient-to-br from-indigo-950 to-slate-950 text-slate-100 rounded-3xl border border-indigo-900/50 shadow-xl shadow-brand-950/10 mb-6";
 
   const observations = ai.key_observations || [];
   const obsHtml = observations.map(obs => `
@@ -846,12 +846,12 @@ function buildAiInsightsBlock(ai) {
   `).join("");
 
   card.innerHTML = `
-    <div class="flex items-center justify-between gap-4 pb-4 border-b border-brand-800/40">
+    <div class="flex items-center justify-between gap-4 pb-4 border-b border-indigo-900/40">
       <div class="flex items-center gap-2.5">
-        <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-800/60 border border-brand-700/40 text-cyan-400 shadow shadow-brand-500/10">${iconSvg('<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>', 16)}</span>
+        <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-950/60 border border-indigo-900/40 text-cyan-400 shadow shadow-indigo-500/10">${iconSvg('<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>', 16)}</span>
         <h4 class="text-sm font-extrabold tracking-tight">AI Procurement Intelligence Analysis</h4>
       </div>
-      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-cyan-300 bg-cyan-950/80 border border-cyan-800/40">Executive Report</span>
+      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-cyan-300 bg-cyan-950/85 border border-cyan-800/40">Executive Report</span>
     </div>
     <div class="space-y-4">
       ${ai.executive_summary ? `<p class="text-sm leading-relaxed text-slate-200 font-medium">${escapeHtml(ai.executive_summary)}</p>` : ""}
@@ -895,7 +895,7 @@ function renderDashboardPanel(data) {
   
   if (data.business_summary) {
     const heading = document.createElement("h2");
-    heading.className = "text-base font-extrabold text-slate-900 tracking-tight mb-4 flex items-center gap-2 mt-4";
+    heading.className = "text-base font-extrabold text-slate-100 tracking-tight mb-4 flex items-center gap-2 mt-4";
     heading.textContent = "Executive Business Insights";
     dashboardBody.appendChild(heading);
     
@@ -903,7 +903,7 @@ function renderDashboardPanel(data) {
     dashboardBody.appendChild(buildBusinessAnalyticsRow(data.business_summary));
     
     const divider = document.createElement("hr");
-    divider.className = "border-slate-200/80 my-8";
+    divider.className = "border-slate-800/80 my-8";
     dashboardBody.appendChild(divider);
   }
 
@@ -913,7 +913,7 @@ function renderDashboardPanel(data) {
   }
   
   const secHeading = document.createElement("h2");
-  secHeading.className = "text-base font-extrabold text-slate-900 tracking-tight mb-4 flex items-center gap-2";
+  secHeading.className = "text-base font-extrabold text-slate-100 tracking-tight mb-4 flex items-center gap-2";
   secHeading.textContent = "Business Domain Exploration";
   dashboardBody.appendChild(secHeading);
 

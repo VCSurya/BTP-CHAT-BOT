@@ -18,7 +18,7 @@ import re
 import uuid
 
 from flask import Flask, jsonify, render_template, request, session
-
+from flask_cors import CORS 
 from config import Config
 from prompts.system_prompts import analyst_system, planner_system
 from prompts.table_knowledge import TABLE_ALIASES
@@ -35,6 +35,10 @@ from services.hana_service import HanaService
 from services.llm_service import LLMError, LLMService
 from services.memory import ConversationMemory
 from services.sql_guard import SqlValidationError, validate_select
+
+app = Flask(__name__)
+
+CORS(app)
 
 logging.basicConfig(
     level=logging.INFO,
