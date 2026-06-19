@@ -75,6 +75,88 @@ function renderText(text) {
   return escapeHtml(text).replace(/\n/g, "<br>");
 }
 
+// Renders simple Markdown (headings, bold/italic, bullet & numbered lists)
+// from assistant replies into safe, styled HTML for the chat bubble.
+function renderInlineMarkdown(escapedLine) {
+  let out = escapedLine.replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold text-white">$1</strong>');
+  out = out.replace(/(^|[^*\w])\*([^*]+?)\*(?!\*)/g, '$1<em>$2</em>');
+  out = out.replace(/(^|[^_\w])_([^_]+?)_(?!_)/g, '$1<em>$2</em>');
+  return out;
+}
+
+function renderMarkdown(text) {
+  if (text == null || text === "") return "";
+  const lines = escapeHtml(text).split(/\n/);
+
+  let html = "";
+  let listType = null;
+  let paragraphLines = [];
+
+  const flushParagraph = () => {
+    if (paragraphLines.length) {
+      html += `<p class="mb-2 last:mb-0">${paragraphLines.join("<br>")}</p>`;
+      paragraphLines = [];
+    }
+  };
+  const closeList = () => {
+    if (listType) {
+      html += `</${listType}>`;
+      listType = null;
+    }
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) {
+      flushParagraph();
+      closeList();
+      continue;
+    }
+
+    const heading = line.match(/^(#{1,4})\s+(.*)$/);
+    if (heading) {
+      flushParagraph();
+      closeList();
+      const level = heading[1].length;
+      const tag = `h${Math.min(level + 2, 6)}`;
+      const sizeClass = level <= 2 ? "text-[0.95rem]" : "text-sm";
+      html += `<${tag} class="${sizeClass} font-bold text-white mt-3 mb-1.5 first:mt-0">${renderInlineMarkdown(heading[2])}</${tag}>`;
+      continue;
+    }
+
+    const bullet = line.match(/^[*-]\s+(.*)$/);
+    if (bullet) {
+      flushParagraph();
+      if (listType !== "ul") {
+        closeList();
+        html += `<ul class="list-disc list-outside ml-4 space-y-1 mb-2 marker:text-brand-500">`;
+        listType = "ul";
+      }
+      html += `<li>${renderInlineMarkdown(bullet[1])}</li>`;
+      continue;
+    }
+
+    const numbered = line.match(/^\d+[.)]\s+(.*)$/);
+    if (numbered) {
+      flushParagraph();
+      if (listType !== "ol") {
+        closeList();
+        html += `<ol class="list-decimal list-outside ml-4 space-y-1 mb-2 marker:text-brand-500 marker:font-semibold">`;
+        listType = "ol";
+      }
+      html += `<li>${renderInlineMarkdown(numbered[1])}</li>`;
+      continue;
+    }
+
+    closeList();
+    paragraphLines.push(renderInlineMarkdown(line));
+  }
+
+  flushParagraph();
+  closeList();
+  return html;
+}
+
 function scrollToBottom() {
   requestAnimationFrame(() => {
     messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: "smooth" });
@@ -137,9 +219,9 @@ function addMessage(role, htmlContent, opts = {}) {
 
   const bubble = document.createElement("div");
   if (role === "assistant") {
-    bubble.className = "max-w-[85%] min-w-0 bg-slate-900/80 border border-slate-800/80 rounded-2xl rounded-tl-sm px-4.5 py-3 text-slate-200 text-sm shadow-sm leading-relaxed" + (opts.error ? " border-red-900/50 bg-red-950/20 text-red-400" : "");
+    bubble.className = "max-w-[85%] min-w-0 bg-slate-900/80 border border-slate-800/80 rounded-2xl rounded-tl-sm px-6 py-3 text-slate-200 text-sm shadow-sm leading-relaxed" + (opts.error ? " border-red-900/50 bg-red-950/20 text-red-400" : "");
   } else {
-    bubble.className = "max-w-[85%] min-w-0 bg-gradient-to-tr from-violet-600/90 to-fuchsia-600/80 border border-violet-500/30 rounded-2xl rounded-tr-sm px-4.5 py-3 text-white text-sm shadow-sm leading-relaxed";
+    bubble.className = "max-w-[85%] min-w-0 bg-gradient-to-tr from-violet-600/90 to-fuchsia-600/80 border border-violet-500/30 rounded-2xl rounded-tr-sm px-6 py-3 text-white text-sm shadow-sm leading-relaxed";
   }
   bubble.innerHTML = htmlContent;
 
@@ -532,7 +614,7 @@ function closeChartModal() {
 
 function renderAssistantData(data) {
   // Always render the reply text in the chat bubble
-  addMessage("assistant", `<p>${renderText(data.reply)}</p>`);
+  addMessage("assistant", renderMarkdown(data.reply));
 
   // Create a separate, full-width container for visualizations (charts, tables, SQL details)
   const hasViz = data.chart || (data.table && data.table.rows && data.table.rows.length) || data.sql;
@@ -1239,7 +1321,7 @@ function renderAssistantDashboard(data) {
   // Render a clean chat bubble saying the report was built
   addMessage("assistant", `
     <div class="flex flex-col gap-3">
-      <p>${renderText(data.reply)}</p>
+      ${renderMarkdown(data.reply)}
       <button class="inline-flex items-center justify-center gap-2 self-start px-4 py-2.5 bg-gradient-to-tr from-brand-600 to-brand-700 hover:from-brand-500 hover:to-brand-600 text-white text-xs font-bold rounded-xl shadow-md cursor-pointer transition-all duration-150" onclick="showDashboardModalDirectly()" type="button">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
@@ -1418,9 +1500,9 @@ async function sendMessage(message) {
     } else if (data.type === "dashboard") {
       renderAssistantDashboard(data);
     } else if (data.type === "error") {
-      addMessage("assistant", `<p>${renderText(data.reply)}</p>`, { error: true });
+      addMessage("assistant", renderMarkdown(data.reply), { error: true });
     } else {
-      addMessage("assistant", `<p>${renderText(data.reply || data.error)}</p>`);
+      addMessage("assistant", renderMarkdown(data.reply || data.error));
     }
   } catch (err) {
     typingEl.remove();

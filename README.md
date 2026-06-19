@@ -85,8 +85,11 @@ All settings come from environment variables — see `.env.example`. Key ones:
 
 | Variable | Purpose | Default |
 | --- | --- | --- |
-| `OPENAI_API_KEY` | OpenAI key | — (required) |
+| `LLM_PROVIDER` | `openai` or `gemini` | `openai` |
+| `OPENAI_API_KEY` | OpenAI key | — (required if provider is `openai`) |
 | `OPENAI_MODEL` | Model name | `gpt-4o-mini` |
+| `GEMINI_API_KEY` | Google AI Studio key | — (required if provider is `gemini`) |
+| `GEMINI_MODEL` | Model name | `gemini-2.0-flash` |
 | `HANA_ADDRESS` / `HANA_PORT` | HANA Cloud endpoint | — / `443` |
 | `HANA_USER` / `HANA_PASSWORD` | DB credentials | — (required) |
 | `HANA_SCHEMA` | Schema to introspect | blank → `CURRENT_SCHEMA` |

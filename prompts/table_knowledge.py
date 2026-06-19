@@ -111,6 +111,13 @@ TABLE_BUSINESS_CONTEXT = {
         "purpose": "Main PO master data - stores all PO details.",
         "connected_tables": ["MaterialSet", "ProjectWBSSet", "WBSTrainSet", "CommentSet", "DocumentSet", "HierarchyNodeSet", "Users (common.commoncv)", "POAssignmentSet", "POBGRelationSet", "MaterialFamilySet"],
         "importance": "MAIN MASTER TABLE - Central hub storing all core purchase order metadata.",
+        "column_notes": (
+            "There is NO column literally named \"STATUS\" or \"ORDERSTATUS\" on this "
+            "table - do not guess either of those. The PO's current lifecycle/status "
+            "(open, closed, released, etc.) lives in \"PORELEASESTATUS\". "
+            "\"PAYMENTSTATUS\" is a separate field for billing/payment status only - "
+            "never use it to answer a general 'PO status' question."
+        ),
     },
     "ZHANADB_QUERYLISTCONCERNEDSET": {
         "purpose": "Stores concerned persons for queries.",

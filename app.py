@@ -23,7 +23,7 @@ from flask_cors import CORS
 from config import Config
 from prompts.system_prompts import analyst_system, planner_system
 from prompts.table_knowledge import TABLE_ALIASES
-from services.chart_service import build_chart
+from services.chart_service import build_chart, infer_columns
 from services.dashboard_service import (
     DashboardError,
     build_dashboard,
@@ -78,6 +78,28 @@ def _build_recent_context(last_query: dict) -> str:
         "original columns unless the user asks to drop them. If the new message asks "
         "to see this same data in a different chart, use the 'rechart' intent."
     )
+
+
+def _attempt_sql_repair(llm, system_prompt: str, user_message: str,
+                         failed_sql: str, error) -> dict | None:
+    """One self-correction pass: feed the exact DB error back to the planner
+    so it can re-read the schema and fix a wrong column/table name, instead
+    of giving up after a single bad guess. Returns a fresh plan dict, or
+    None if the repair call itself fails."""
+    repair_message = (
+        f"{user_message}\n\n"
+        "[SYSTEM NOTE: Your previous SQL for this question failed against the "
+        f"real database with this error: {error}\n"
+        f"The failed SQL was: {failed_sql}\n"
+        "Re-check the schema above very carefully and find the column/table that "
+        "actually exists for what was meant (check any 'Column notes' for the "
+        "table too). Return a corrected plan. If nothing in the schema truly "
+        "matches, use intent \"clarify\" instead of guessing again.]"
+    )
+    try:
+        return llm.plan(system_prompt, [], repair_message)
+    except LLMError:
+        return None
 
 
 def _normalize_table_token(name: str) -> str:
@@ -438,7 +460,8 @@ def create_app() -> Flask:
             {
                 "status": "ok",
                 "database": database,
-                "model": cfg.OPENAI_MODEL,
+                "provider": cfg.LLM_PROVIDER,
+                "model": cfg.active_model(),
                 "config_problems": cfg.validate(),
             }
         )
@@ -668,6 +691,19 @@ def create_app() -> Flask:
             elif viz.get("type", "none") == "none":
                 viz["type"] = "bar"
 
+            # The previous answer may have been shown as a plain table (no
+            # label/value mapping was ever picked, e.g. viz.type was "none").
+            # Re-derive a mapping straight from the real data instead of
+            # forcing a chart type with nothing to plot.
+            if not viz.get("label_column") or not viz.get("value_columns"):
+                inferred_label, inferred_values = infer_columns(
+                    last["columns"], last["rows"]
+                )
+                if not viz.get("label_column"):
+                    viz["label_column"] = inferred_label
+                if not viz.get("value_columns"):
+                    viz["value_columns"] = inferred_values
+
             prior = {"columns": last["columns"], "rows": last["rows"]}
             chart = build_chart(prior, viz, cfg.MAX_CHART_POINTS)
             if not chart:
@@ -745,14 +781,40 @@ def create_app() -> Flask:
 
         try:
             result = hana.execute_query(safe_sql, max_rows=cfg.MAX_RESULT_ROWS)
-        except Exception:  # noqa: BLE001
-            log.exception("Query execution failed for SQL: %s", safe_sql)
-            reply = (
-                "I wasn't able to pull that up — it might be something I don't have "
-                "information on. Could you rephrase it, or ask about something else?"
+        except Exception as exec_error:  # noqa: BLE001
+            log.warning("Query execution failed for SQL: %s", safe_sql, exc_info=True)
+            # One self-correction attempt: feed the real DB error back to the
+            # planner so it can fix a wrong column/table guess instead of
+            # immediately telling the user it failed.
+            repaired_plan = _attempt_sql_repair(
+                llm,
+                planner_system(schema_prompt, recent_context, user_profile=user_profile),
+                user_message, safe_sql, exec_error,
             )
-            memory.append(cid, "assistant", reply)
-            return jsonify({"type": "error", "reply": reply})
+            result = None
+            if repaired_plan and (repaired_plan.get("intent") or "").lower() == "data_query":
+                try:
+                    repaired_sql = validate_select(repaired_plan.get("sql") or "", max_chars=cfg.MAX_SQL_CHARS)
+                    result = hana.execute_query(repaired_sql, max_rows=cfg.MAX_RESULT_ROWS)
+                    safe_sql = repaired_sql
+                    enhanced_question = repaired_plan.get("enhanced_question") or enhanced_question
+                except Exception:  # noqa: BLE001
+                    log.exception("Repaired SQL also failed: %s", repaired_plan.get("sql"))
+                    result = None
+            elif repaired_plan and (repaired_plan.get("intent") or "").lower() == "clarify":
+                question = repaired_plan.get("clarifying_question") or (
+                    "Could you give me a little more detail so I can pull the right data?"
+                )
+                memory.append(cid, "assistant", question)
+                return jsonify({"type": "clarify", "reply": question})
+
+            if result is None:
+                reply = (
+                    "I wasn't able to pull that up — it might be something I don't have "
+                    "information on. Could you rephrase it, or ask about something else?"
+                )
+                memory.append(cid, "assistant", reply)
+                return jsonify({"type": "error", "reply": reply})
 
         # Stage 2: analyze.
         try:

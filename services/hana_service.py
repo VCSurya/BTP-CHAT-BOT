@@ -458,6 +458,8 @@ class HanaService:
                     )
                 if context.get("importance"):
                     lines.append(f'    Importance: {context["importance"]}')
+                if context.get("column_notes"):
+                    lines.append(f'    Column notes: {context["column_notes"]}')
             for row in info.get("sample") or []:
                 line = "    e.g. " + json.dumps(row, ensure_ascii=False, default=str)
                 if len(line) > 500:

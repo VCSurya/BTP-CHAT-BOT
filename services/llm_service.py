@@ -1,7 +1,10 @@
-"""OpenAI access layer for the two pipeline stages.
+"""LLM access layer for the two pipeline stages, supporting either OpenAI or
+Gemini as the backing model (selected via Config.LLM_PROVIDER).
 
-Uses Chat Completions with JSON mode (response_format=json_object) and
-temperature 0 for deterministic, parseable output.
+Gemini is reached through Google's OpenAI-compatible endpoint, so both
+providers share the same Chat Completions call: JSON mode
+(response_format=json_object) and temperature 0 for deterministic,
+parseable output.
 """
 import json
 import logging
@@ -18,15 +21,24 @@ class LLMError(Exception):
 class LLMService:
     def __init__(self, config):
         self.cfg = config
-        self.client = OpenAI(
-            api_key=config.OPENAI_API_KEY,
-            timeout=config.OPENAI_TIMEOUT,
-        )
+        if config.LLM_PROVIDER == "gemini":
+            self.model = config.GEMINI_MODEL
+            self.client = OpenAI(
+                api_key=config.GEMINI_API_KEY,
+                base_url=config.GEMINI_BASE_URL,
+                timeout=config.GEMINI_TIMEOUT,
+            )
+        else:
+            self.model = config.OPENAI_MODEL
+            self.client = OpenAI(
+                api_key=config.OPENAI_API_KEY,
+                timeout=config.OPENAI_TIMEOUT,
+            )
 
     def _chat_json(self, system_prompt: str, messages: list) -> dict:
         try:
             response = self.client.chat.completions.create(
-                model=self.cfg.OPENAI_MODEL,
+                model=self.model,
                 temperature=0,
                 response_format={"type": "json_object"},
                 messages=[{"role": "system", "content": system_prompt}] + messages,

@@ -26,10 +26,23 @@ def _as_int(value: str, default: int) -> int:
 
 
 class Config:
+    # --- LLM provider selection ---
+    # "openai" or "gemini". Gemini is accessed through Google's OpenAI-compatible
+    # endpoint, so both providers reuse the same client code.
+    LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "openai").strip().lower()
+
     # --- OpenAI ---
     OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
     OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
     OPENAI_TIMEOUT = _as_int(os.environ.get("OPENAI_TIMEOUT"), 60)
+
+    # --- Gemini (via Google's OpenAI-compatible endpoint) ---
+    GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+    GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
+    GEMINI_TIMEOUT = _as_int(os.environ.get("GEMINI_TIMEOUT"), 60)
+    GEMINI_BASE_URL = os.environ.get(
+        "GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai/"
+    )
 
     # --- SAP HANA Cloud ---
     HANA_ADDRESS = os.environ.get("HANA_ADDRESS", "")
@@ -65,10 +78,21 @@ class Config:
     DASHBOARD_TOP_N = _as_int(os.environ.get("DASHBOARD_TOP_N"), 10)
 
     @classmethod
+    def active_model(cls) -> str:
+        return cls.GEMINI_MODEL if cls.LLM_PROVIDER == "gemini" else cls.OPENAI_MODEL
+
+    @classmethod
     def validate(cls):
         """Return a list of human-readable configuration problems (empty = ok)."""
         problems = []
-        if not cls.OPENAI_API_KEY:
+        if cls.LLM_PROVIDER not in ("openai", "gemini"):
+            problems.append(
+                f"LLM_PROVIDER={cls.LLM_PROVIDER!r} is invalid; use 'openai' or 'gemini'."
+            )
+        if cls.LLM_PROVIDER == "gemini":
+            if not cls.GEMINI_API_KEY:
+                problems.append("GEMINI_API_KEY is not set.")
+        elif not cls.OPENAI_API_KEY:
             problems.append("OPENAI_API_KEY is not set.")
         if not cls.HANA_ADDRESS:
             problems.append("HANA_ADDRESS is not set.")
