@@ -69,12 +69,25 @@ TABLE_BUSINESS_CONTEXT = {
         "importance": "MAINLY IN USE - Tracks overall progress and coordinators of dispatch/quality inspection workflows.",
     },
     "ZHANADB_MATERIALFAMILYSET": {
-        "purpose": "Stores material family & sub-family classification.",
+        "purpose": "Stores material family & sub-family classification, keyed by MATERIALID.",
         "connected_tables": ["MaterialSet", "PurchaseOrderSet"],
+        "column_notes": (
+            "Joins to MaterialSet on \"MATERIALID\" only - there is no FK to "
+            "PurchaseOrderSet. For PO-level family/category breakdowns, prefer "
+            "ZHANADB_PURCHASEORDERSET.\"MATFAMILY\" directly instead of joining this "
+            "table (see that table's column notes) - only join here when the question "
+            "is specifically about the MaterialSet master, not about POs."
+        ),
     },
     "ZHANADB_MATERIALSET": {
         "purpose": "Material master data with descriptions.",
         "connected_tables": ["MaterialFamilySet", "PurchaseOrderSet"],
+        "column_notes": (
+            "Joins to ZHANADB_MATERIALFAMILYSET on \"MATERIALID\" and to "
+            "ZHANADB_PURCHASEORDERSET on \"MATERIALID\". For PO-level family/category "
+            "breakdowns, prefer ZHANADB_PURCHASEORDERSET.\"MATFAMILY\" directly - it is "
+            "already denormalized there, so this join is usually unnecessary."
+        ),
     },
     "ZHANADB_MDCCRELATIONSET": {
         "purpose": "Links MDCC users to inspection requests.",
@@ -116,7 +129,12 @@ TABLE_BUSINESS_CONTEXT = {
             "table - do not guess either of those. The PO's current lifecycle/status "
             "(open, closed, released, etc.) lives in \"PORELEASESTATUS\". "
             "\"PAYMENTSTATUS\" is a separate field for billing/payment status only - "
-            "never use it to answer a general 'PO status' question."
+            "never use it to answer a general 'PO status' question. "
+            "Material family/category for a PO is ALREADY denormalized directly on "
+            "THIS table as \"MATFAMILY\", \"MATCATEGORY\", \"MATSUBCATEGORY\" - for any "
+            "'by material family' breakdown of POs, use po.\"MATFAMILY\" directly and "
+            "do NOT join MaterialFamilySet or MaterialSet, there is no FK between them "
+            "and this table for that purpose."
         ),
     },
     "ZHANADB_QUERYLISTCONCERNEDSET": {

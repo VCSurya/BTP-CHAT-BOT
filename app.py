@@ -35,7 +35,7 @@ from services.dashboard_service import (
 from services.hana_service import HanaService
 from services.llm_service import LLMError, LLMService
 from services.memory import ConversationMemory
-from services.sql_guard import SqlValidationError, validate_select
+from services.sql_guard import SqlValidationError, find_undeclared_aliases, validate_select
 
 app = Flask(__name__)
 
@@ -780,6 +780,14 @@ def create_app() -> Flask:
             return jsonify({"type": "clarify", "reply": reply})
 
         try:
+            undeclared = find_undeclared_aliases(safe_sql)
+            if undeclared:
+                raise ValueError(
+                    "invalid column name: table alias(es) "
+                    + ", ".join(undeclared)
+                    + " are referenced (e.g. " + undeclared[0] + '."COLUMN") but never '
+                    "introduced via a FROM/JOIN clause in this statement."
+                )
             result = hana.execute_query(safe_sql, max_rows=cfg.MAX_RESULT_ROWS)
         except Exception as exec_error:  # noqa: BLE001
             log.warning("Query execution failed for SQL: %s", safe_sql, exc_info=True)
@@ -795,6 +803,13 @@ def create_app() -> Flask:
             if repaired_plan and (repaired_plan.get("intent") or "").lower() == "data_query":
                 try:
                     repaired_sql = validate_select(repaired_plan.get("sql") or "", max_chars=cfg.MAX_SQL_CHARS)
+                    repaired_undeclared = find_undeclared_aliases(repaired_sql)
+                    if repaired_undeclared:
+                        raise ValueError(
+                            "invalid column name: table alias(es) "
+                            + ", ".join(repaired_undeclared)
+                            + " are still referenced without a FROM/JOIN clause."
+                        )
                     result = hana.execute_query(repaired_sql, max_rows=cfg.MAX_RESULT_ROWS)
                     safe_sql = repaired_sql
                     enhanced_question = repaired_plan.get("enhanced_question") or enhanced_question

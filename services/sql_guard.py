@@ -98,3 +98,35 @@ def validate_select(sql: str, max_chars: int = 6000) -> str:
         )
 
     return runnable
+
+
+# Matches `FROM "SCHEMA"."TABLE" alias` / `JOIN "SCHEMA"."TABLE" alias`, with or
+# without an `AS` keyword, used to collect every alias the query actually
+# introduces.
+_ALIAS_DECL = re.compile(
+    r'\b(?:FROM|JOIN)\s+"[^"]+"\."[^"]+"\s+(?:AS\s+)?([A-Za-z_]\w*)\b',
+    re.IGNORECASE,
+)
+
+# Matches `alias."COLUMN"` usages anywhere in the query.
+_ALIAS_USE = re.compile(r'\b([A-Za-z_]\w*)\."')
+
+
+def find_undeclared_aliases(sql: str) -> list:
+    """Return any `alias."COLUMN"` references whose alias is never introduced
+    by a FROM/JOIN clause in the same statement.
+
+    This is the LLM's most common self-inflicted failure mode: it writes
+    `mf."MATERIALFAMILY"` while forgetting to actually JOIN a `mf` table, which
+    HANA rejects with an opaque "invalid column name" error. Catching it here
+    avoids a wasted round trip to the database and gives the repair prompt an
+    exact, actionable alias name instead of a raw HANA error.
+
+    Unlike validate_select's scan copy, double-quoted identifiers are kept
+    intact here (only comments and string literals are stripped) because the
+    table/alias names inside them are exactly what this check needs to read.
+    """
+    scan = _strip_comments(re.sub(r"'(?:[^']|'')*'", "''", sql))
+    declared = {m.group(1).upper() for m in _ALIAS_DECL.finditer(scan)}
+    used = {m.group(1).upper() for m in _ALIAS_USE.finditer(scan)}
+    return sorted(used - declared)
